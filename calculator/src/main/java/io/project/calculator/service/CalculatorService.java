@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface CalculatorService {
 
-    List<LoanOfferDto> offer(LoanStatementRequestDto loanStatementRequestDto);
+    List<LoanOfferDto> offers(LoanStatementRequestDto loanStatementRequestDto);
     CreditDto calculate(ScoringDataDto scoringDataDto);
 }
