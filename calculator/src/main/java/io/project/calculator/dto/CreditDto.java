@@ -1,5 +1,6 @@
 package io.project.calculator.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -20,6 +21,6 @@ public record CreditDto(
         Boolean isInsuranceEnabled,
         @NotNull
         Boolean isSalaryClient,
-        @NotNull
+        @NotEmpty
         List<PaymentScheduleElementDto> paymentSchedule) {
 }
