@@ -1,6 +1,8 @@
 package io.project.calculator.dto;
 
+import io.project.calculator.util.validation.ValidAge;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -23,8 +25,10 @@ import java.time.LocalDate;
         """)
 public record LoanStatementRequestDto(
         @NotNull
+        @Min(20000)
         BigDecimal amount,
         @NotNull
+        @Min(6)
         Integer term,
         @NotNull
         @Size(min = 2, max = 30)
@@ -39,6 +43,7 @@ public record LoanStatementRequestDto(
         String email,
         @NotNull
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        @ValidAge
         LocalDate birthdate,
         @NotNull
         @Pattern(regexp = "^\\d{4}$")

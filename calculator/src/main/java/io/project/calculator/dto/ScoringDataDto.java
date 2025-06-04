@@ -2,6 +2,7 @@ package io.project.calculator.dto;
 
 import io.project.calculator.dto.enums.Gender;
 import io.project.calculator.dto.enums.MaritalStatus;
+import io.project.calculator.util.validation.ValidAge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +35,7 @@ import java.time.LocalDate;
                 "workExperienceTotal": 36,
                 "workExperienceCurrent": 12
             },
-            "accountNumber": "123456789012",
+            "accountNumber": "12345678901234567890",
             "isInsuranceEnabled": true,
             "isSalaryClient": true
         }
@@ -58,6 +59,7 @@ public record ScoringDataDto(
         Gender gender,
         @NotNull
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        @ValidAge
         LocalDate birthdate,
         @NotNull
         @Pattern(regexp = "^\\d{4}$")
@@ -76,6 +78,7 @@ public record ScoringDataDto(
         @NotNull
         EmploymentDto employment,
         @NotNull
+        @Pattern(regexp = "^\\d{20}$")
         String accountNumber,
         @NotNull
         Boolean isInsuranceEnabled,
