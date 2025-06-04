@@ -57,7 +57,7 @@ public class CalculatorServiceTestData {
             MaritalStatus.DIVORCED,
             1,
             EMPLOYMENT_DTO_1,
-            "123456789012",
+            "12345678901234567890",
             true,
             false);
 
@@ -74,7 +74,7 @@ public class CalculatorServiceTestData {
             MaritalStatus.MARRIED,
             1,
             EMPLOYMENT_DTO_2,
-            "123456789012",
+            "12345678901234567890",
             false,
             true);
 
@@ -91,7 +91,7 @@ public class CalculatorServiceTestData {
             MaritalStatus.SINGLE,
             1,
             EMPLOYMENT_DTO_3,
-            "123456789012",
+            "12345678901234567890",
             true,
             true);
 }

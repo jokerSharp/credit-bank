@@ -3,6 +3,7 @@ package io.project.calculator.service.impl;
 import io.project.calculator.dto.*;
 import io.project.calculator.service.CalculatorService;
 import io.project.calculator.service.LoanOfferOption;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class CalculatorServiceImpl implements CalculatorService {
 
@@ -22,6 +24,7 @@ public class CalculatorServiceImpl implements CalculatorService {
 
     @Override
     public List<LoanOfferDto> offers(LoanStatementRequestDto loanStatementRequestDto) {
+        log.info("received LoanStatementRequestDto object={}", loanStatementRequestDto);
         int numberOfPayments = loanStatementRequestDto.term() * 12;
         List<LoanOfferDto> offers = new ArrayList<>();
         for (LoanOfferOption option : LoanOfferOption.values()) {
@@ -38,20 +41,24 @@ public class CalculatorServiceImpl implements CalculatorService {
                     option.isInsuranceEnabled(),
                     option.isSalaryClient()));
         }
+        log.info("returning LoanOfferDtos={}", offers);
         return offers;
     }
 
     @Override
     public CreditDto calculate(ScoringDataDto scoringDataDto) {
+        log.info("received ScoringDataDto object={}", scoringDataDto);
         BigDecimal adjustedRate = adjustRateToOption(scoringDataDto.isSalaryClient(),
                 scoringDataDto.isInsuranceEnabled());
         BigDecimal actualRate = score(adjustedRate, scoringDataDto);
+        log.debug("actualRate={}", actualRate);
         int numberOfPayments = scoringDataDto.term() * 12;
         BigDecimal monthlyPayment = calculateMonthlyPayment(scoringDataDto.amount(), actualRate, numberOfPayments);
+        log.debug("monthlyPayment={}", monthlyPayment);
         BigDecimal psk = monthlyPayment.multiply(BigDecimal.valueOf(numberOfPayments));
         List<PaymentScheduleElementDto> paymentSchedule = composePaymentSchedule(numberOfPayments, monthlyPayment,
                 actualRate, psk);
-        return new CreditDto(scoringDataDto.amount(),
+        CreditDto creditDto = new CreditDto(scoringDataDto.amount(),
                 scoringDataDto.term(),
                 monthlyPayment,
                 actualRate,
@@ -59,6 +66,8 @@ public class CalculatorServiceImpl implements CalculatorService {
                 scoringDataDto.isInsuranceEnabled(),
                 scoringDataDto.isSalaryClient(),
                 paymentSchedule);
+        log.info("returning CreditDto={}", creditDto);
+        return creditDto;
     }
 
     private List<PaymentScheduleElementDto> composePaymentSchedule(int numberOfPayments,
