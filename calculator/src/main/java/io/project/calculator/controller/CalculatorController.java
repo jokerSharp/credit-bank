@@ -1,9 +1,9 @@
 package io.project.calculator.controller;
 
-import io.project.calculator.dto.CreditDto;
-import io.project.calculator.dto.LoanOfferDto;
-import io.project.calculator.dto.LoanStatementRequestDto;
-import io.project.calculator.dto.ScoringDataDto;
+import io.project.calculator.model.dto.request.LoanStatementRequestDto;
+import io.project.calculator.model.dto.request.ScoringDataDto;
+import io.project.calculator.model.dto.response.CreditDto;
+import io.project.calculator.model.dto.response.LoanOfferDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

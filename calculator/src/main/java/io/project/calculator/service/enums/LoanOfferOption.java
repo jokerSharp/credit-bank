@@ -1,4 +1,4 @@
-package io.project.calculator.service;
+package io.project.calculator.service.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

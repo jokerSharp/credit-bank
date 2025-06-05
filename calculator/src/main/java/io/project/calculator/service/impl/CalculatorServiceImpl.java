@@ -1,10 +1,12 @@
 package io.project.calculator.service.impl;
 
-import io.project.calculator.dto.*;
+import io.project.calculator.model.dto.request.ScoringDataDto;
+import io.project.calculator.model.dto.response.CreditDto;
+import io.project.calculator.model.dto.response.PaymentScheduleElementDto;
 import io.project.calculator.service.CalculatorService;
-import io.project.calculator.service.LoanOfferOption;
+import io.project.calculator.service.OfferService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,59 +15,37 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+@RequiredArgsConstructor
 @Slf4j
 @Service
 public class CalculatorServiceImpl implements CalculatorService {
 
-    @Value("${app.base-rate}")
-    private BigDecimal baseRate;
-
-    @Override
-    public List<LoanOfferDto> offers(LoanStatementRequestDto loanStatementRequestDto) {
-        log.info("received LoanStatementRequestDto object={}", loanStatementRequestDto);
-        int numberOfPayments = loanStatementRequestDto.term() * 12;
-        List<LoanOfferDto> offers = new ArrayList<>();
-        for (LoanOfferOption option : LoanOfferOption.values()) {
-            BigDecimal adjustedRate = adjustRateToOption(option.isSalaryClient(), option.isInsuranceEnabled());
-            BigDecimal monthlyPayment = calculateMonthlyPayment(loanStatementRequestDto.amount(), adjustedRate,
-                    numberOfPayments);
-            BigDecimal psk = monthlyPayment.multiply(BigDecimal.valueOf(numberOfPayments));
-            offers.add(new LoanOfferDto(UUID.randomUUID(),
-                    loanStatementRequestDto.amount(),
-                    psk,
-                    loanStatementRequestDto.term(),
-                    monthlyPayment,
-                    adjustedRate,
-                    option.isInsuranceEnabled(),
-                    option.isSalaryClient()));
-        }
-        log.info("returning LoanOfferDtos={}", offers);
-        return offers;
-    }
+    private final OfferService offerService;
 
     @Override
     public CreditDto calculate(ScoringDataDto scoringDataDto) {
         log.info("received ScoringDataDto object={}", scoringDataDto);
-        BigDecimal adjustedRate = adjustRateToOption(scoringDataDto.isSalaryClient(),
-                scoringDataDto.isInsuranceEnabled());
+        BigDecimal adjustedRate = offerService.adjustRateToOption(scoringDataDto.getIsSalaryClient(),
+                scoringDataDto.getIsInsuranceEnabled());
         BigDecimal actualRate = score(adjustedRate, scoringDataDto);
         log.debug("actualRate={}", actualRate);
-        int numberOfPayments = scoringDataDto.term() * 12;
-        BigDecimal monthlyPayment = calculateMonthlyPayment(scoringDataDto.amount(), actualRate, numberOfPayments);
+        int numberOfPayments = scoringDataDto.getTerm() * 12;
+        BigDecimal monthlyPayment = offerService.calculateMonthlyPayment(scoringDataDto.getAmount(), actualRate, numberOfPayments);
         log.debug("monthlyPayment={}", monthlyPayment);
         BigDecimal psk = monthlyPayment.multiply(BigDecimal.valueOf(numberOfPayments));
         List<PaymentScheduleElementDto> paymentSchedule = composePaymentSchedule(numberOfPayments, monthlyPayment,
                 actualRate, psk);
-        CreditDto creditDto = new CreditDto(scoringDataDto.amount(),
-                scoringDataDto.term(),
-                monthlyPayment,
-                actualRate,
-                psk,
-                scoringDataDto.isInsuranceEnabled(),
-                scoringDataDto.isSalaryClient(),
-                paymentSchedule);
+        CreditDto creditDto = CreditDto.builder()
+                .amount(scoringDataDto.getAmount())
+                .term(scoringDataDto.getTerm())
+                .monthlyPayment(monthlyPayment)
+                .rate(actualRate)
+                .psk(psk)
+                .isInsuranceEnabled(scoringDataDto.getIsInsuranceEnabled())
+                .isSalaryClient(scoringDataDto.getIsSalaryClient())
+                .paymentSchedule(paymentSchedule)
+                .build();
         log.info("returning CreditDto={}", creditDto);
         return creditDto;
     }
@@ -82,73 +62,43 @@ public class CalculatorServiceImpl implements CalculatorService {
                     .divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP);
             BigDecimal interestPayment = remainingDebt.multiply(monthlyInterestRate)
                     .setScale(2, RoundingMode.HALF_UP);
-            paymentSchedule.add(new PaymentScheduleElementDto(i,
-                    paymentDate,
-                    monthlyPayment,
-                    interestPayment,
-                    monthlyPayment.subtract(interestPayment),
-                    remainingDebt));
+            paymentSchedule.add(PaymentScheduleElementDto.builder()
+                    .number(i)
+                    .date(paymentDate)
+                    .totalPayment(monthlyPayment)
+                    .interestPayment(interestPayment)
+                    .debtPayment(monthlyPayment.subtract(interestPayment))
+                    .remainingDebt(remainingDebt)
+                    .build());
         }
         return paymentSchedule;
-    }
-
-    private BigDecimal adjustRateToOption(boolean isSalaryClient, boolean isInsuranceEnabled) {
-        BigDecimal resultRate = baseRate;
-        if (isSalaryClient) {
-            resultRate = resultRate.subtract(BigDecimal.valueOf(0.4));
-        }
-        if (isInsuranceEnabled) {
-            resultRate = resultRate.subtract(BigDecimal.valueOf(0.6));
-        }
-        return resultRate;
-    }
-
-    /**
-     * base loan formula is
-     * payment = (principal * i * (1 + i) ^ numberOfPayments) / ((1 + i) ^ numberOfPayments - 1)
-     * where:
-     * payment - payment per month,
-     * principal - initial loan amount
-     * i - interest rate per month as a fraction (not percents)
-     * numberOfPayments - number of actual payments, term of loan multiplied by 12
-     *
-     * @return payment per month
-     */
-    private BigDecimal calculateMonthlyPayment(BigDecimal requestedAmount,
-                                               BigDecimal annualRate,
-                                               Integer numberOfPayments) {
-        BigDecimal monthlyInterestRate = annualRate.divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP);
-        BigDecimal powerResult = BigDecimal.ONE.add(monthlyInterestRate).pow(numberOfPayments);
-        BigDecimal paymentNumerator = requestedAmount.multiply(monthlyInterestRate).multiply(powerResult);
-        BigDecimal paymentDenominator = powerResult.subtract(BigDecimal.ONE);
-        return paymentNumerator.divide(paymentDenominator, 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal score(BigDecimal adjustedRate, ScoringDataDto scoringDataDto) {
         BigDecimal resultRate = adjustedRate;
         BigDecimal threePercent = BigDecimal.valueOf(3);
 
-        resultRate = switch (scoringDataDto.employment().employmentStatus()) {
+        resultRate = switch (scoringDataDto.getEmployment().getEmploymentStatus()) {
             case SELF_EMPLOYED -> resultRate.add(BigDecimal.TWO);
             case BUSINESS_OWNER -> resultRate.add(BigDecimal.ONE);
             default -> resultRate;
         };
 
-        resultRate = switch (scoringDataDto.employment().position()) {
+        resultRate = switch (scoringDataDto.getEmployment().getPosition()) {
             case TOP_MANAGER -> resultRate.subtract(threePercent);
             case MIDDLE_MANAGER -> resultRate.subtract(BigDecimal.ONE);
             case LINEAR_EMPLOYEE -> resultRate;
         };
 
-        resultRate = switch (scoringDataDto.maritalStatus()) {
+        resultRate = switch (scoringDataDto.getMaritalStatus()) {
             case MARRIED -> resultRate.subtract(threePercent);
             case DIVORCED -> resultRate.add(BigDecimal.ONE);
             case SINGLE -> resultRate;
         };
 
-        int age = Period.between(scoringDataDto.birthdate(), LocalDate.now()).getYears();
+        int age = Period.between(scoringDataDto.getBirthdate(), LocalDate.now()).getYears();
 
-        resultRate = switch (scoringDataDto.gender()) {
+        resultRate = switch (scoringDataDto.getGender()) {
             case MALE -> age >= 30 && age <= 55 ? resultRate.subtract(threePercent) : resultRate;
             case FEMALE -> age >= 32 && age <= 60 ? resultRate.subtract(threePercent) : resultRate;
             case NON_BINARY -> resultRate.add(BigDecimal.valueOf(7));
