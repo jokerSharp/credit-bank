@@ -1,4 +1,4 @@
-package io.project.calculator.dto.enums;
+package io.project.calculator.model.dto.enums;
 
 public enum Gender {
     MALE, FEMALE, NON_BINARY

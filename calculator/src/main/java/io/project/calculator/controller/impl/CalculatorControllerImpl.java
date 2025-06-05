@@ -1,11 +1,12 @@
 package io.project.calculator.controller.impl;
 
 import io.project.calculator.controller.CalculatorController;
-import io.project.calculator.dto.CreditDto;
-import io.project.calculator.dto.LoanOfferDto;
-import io.project.calculator.dto.LoanStatementRequestDto;
-import io.project.calculator.dto.ScoringDataDto;
+import io.project.calculator.model.dto.request.LoanStatementRequestDto;
+import io.project.calculator.model.dto.request.ScoringDataDto;
+import io.project.calculator.model.dto.response.CreditDto;
+import io.project.calculator.model.dto.response.LoanOfferDto;
 import io.project.calculator.service.CalculatorService;
+import io.project.calculator.service.OfferService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,14 @@ import java.util.List;
 @RestController
 public class CalculatorControllerImpl implements CalculatorController {
 
+    private final OfferService offerService;
     private final CalculatorService calculatorService;
 
     @PostMapping("/offers")
     @Override
     public List<LoanOfferDto> offers(@RequestBody @Valid LoanStatementRequestDto loanStatementRequestDto) {
         log.info("received LoanStatementRequestDto request={}", loanStatementRequestDto);
-        List<LoanOfferDto> offers = calculatorService.offers(loanStatementRequestDto);
+        List<LoanOfferDto> offers = offerService.offers(loanStatementRequestDto);
         log.info("returning LoanOfferDtos={}", offers);
         return offers;
     }

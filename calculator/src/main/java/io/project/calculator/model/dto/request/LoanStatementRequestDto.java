@@ -1,4 +1,4 @@
-package io.project.calculator.dto;
+package io.project.calculator.model.dto.request;
 
 import io.project.calculator.util.validation.ValidAge;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -23,37 +25,34 @@ import java.time.LocalDate;
             "passportNumber": "567890"
         }
         """)
-public record LoanStatementRequestDto(
+@Builder
+@Value
+public class LoanStatementRequestDto {
         @NotNull
         @Min(20000)
-        BigDecimal amount,
+        BigDecimal amount;
         @NotNull
         @Min(6)
-        Integer term,
+        Integer term;
         @NotNull
         @Size(min = 2, max = 30)
-        String firstName,
+        String firstName;
         @NotNull
         @Size(min = 2, max = 30)
-        String lastName,
+        String lastName;
         @Size(min = 2, max = 30)
-        String middleName,
+        String middleName;
         @NotNull
         @Pattern(regexp = "^[a-z0-9A-Z_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9A-Z.-]+$")
-        String email,
+        String email;
         @NotNull
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         @ValidAge
-        LocalDate birthdate,
+        LocalDate birthdate;
         @NotNull
         @Pattern(regexp = "^\\d{4}$")
-        String passportSeries,
+        String passportSeries;
         @NotNull
         @Pattern(regexp = "^\\d{6}$")
-        String passportNumber) {
-
-    public LoanStatementRequestDto(BigDecimal amount, Integer term, String firstName, String lastName, String email,
-                                   LocalDate birthdate, String passportSeries, String passportNumber) {
-        this(amount, term, firstName, lastName, null, email, birthdate, passportSeries, passportNumber);
-    }
+        String passportNumber;
 }

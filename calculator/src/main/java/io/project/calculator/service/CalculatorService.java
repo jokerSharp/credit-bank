@@ -1,14 +1,9 @@
 package io.project.calculator.service;
 
-import io.project.calculator.dto.CreditDto;
-import io.project.calculator.dto.LoanOfferDto;
-import io.project.calculator.dto.LoanStatementRequestDto;
-import io.project.calculator.dto.ScoringDataDto;
-
-import java.util.List;
+import io.project.calculator.model.dto.response.CreditDto;
+import io.project.calculator.model.dto.request.ScoringDataDto;
 
 public interface CalculatorService {
 
-    List<LoanOfferDto> offers(LoanStatementRequestDto loanStatementRequestDto);
     CreditDto calculate(ScoringDataDto scoringDataDto);
 }
