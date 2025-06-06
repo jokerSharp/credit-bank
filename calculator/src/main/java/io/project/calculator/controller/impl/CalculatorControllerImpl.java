@@ -19,14 +19,18 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/calculator")
+@RequestMapping(CalculatorControllerImpl.ROOT_CALCULATOR_MAPPING)
 @RestController
 public class CalculatorControllerImpl implements CalculatorController {
+
+    public static final String ROOT_CALCULATOR_MAPPING = "/calculator";
+    public static final String OFFERS_MAPPING = "/offers";
+    public static final String CALCULATOR_MAPPING = "/calc";
 
     private final OfferService offerService;
     private final CalculatorService calculatorService;
 
-    @PostMapping("/offers")
+    @PostMapping(OFFERS_MAPPING)
     @Override
     public List<LoanOfferDto> offers(@RequestBody @Valid LoanStatementRequestDto loanStatementRequestDto) {
         log.info("received LoanStatementRequestDto request={}", loanStatementRequestDto);
@@ -35,7 +39,7 @@ public class CalculatorControllerImpl implements CalculatorController {
         return offers;
     }
 
-    @PostMapping("/calc")
+    @PostMapping(CALCULATOR_MAPPING)
     @Override
     public CreditDto calculate(@RequestBody @Valid ScoringDataDto scoringDataDto) {
         log.info("received ScoringDataDto request={}", scoringDataDto);
