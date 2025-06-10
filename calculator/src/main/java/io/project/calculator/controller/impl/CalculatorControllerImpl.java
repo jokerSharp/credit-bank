@@ -33,18 +33,12 @@ public class CalculatorControllerImpl implements CalculatorController {
     @PostMapping(OFFERS_MAPPING)
     @Override
     public List<LoanOfferDto> offers(@RequestBody @Valid LoanStatementRequestDto loanStatementRequestDto) {
-        log.info("received LoanStatementRequestDto request={}", loanStatementRequestDto);
-        List<LoanOfferDto> offers = offerService.offers(loanStatementRequestDto);
-        log.info("returning LoanOfferDtos={}", offers);
-        return offers;
+        return offerService.offers(loanStatementRequestDto);
     }
 
     @PostMapping(CALCULATOR_MAPPING)
     @Override
     public CreditDto calculate(@RequestBody @Valid ScoringDataDto scoringDataDto) {
-        log.info("received ScoringDataDto request={}", scoringDataDto);
-        CreditDto creditDto = calculatorService.calculate(scoringDataDto);
-        log.info("returning CreditDto={}", creditDto);
-        return creditDto;
+        return calculatorService.calculate(scoringDataDto);
     }
 }

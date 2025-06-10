@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -23,5 +24,12 @@ public class GlobalExceptionHandler {
                         error.getDefaultMessage()))
                 .toList();
         return ResponseEntity.badRequest().body(new ErrorResponse(LocalDateTime.now(), errors));
+    }
+
+    @ExceptionHandler(LoanRequestDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleLoanRequestDeniedException(LoanRequestDeniedException e) {
+        log.error(e.getMessage());
+        return ResponseEntity.badRequest().body(new ErrorResponse(LocalDateTime.now(),
+                Collections.singletonList(ErrorResponse.CustomFieldError.builder().message(e.getMessage()).build())));
     }
 }

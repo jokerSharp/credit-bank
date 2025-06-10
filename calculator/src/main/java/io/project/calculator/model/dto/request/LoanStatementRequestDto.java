@@ -1,6 +1,5 @@
 package io.project.calculator.model.dto.request;
 
-import io.project.calculator.util.validation.ValidAge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -28,31 +27,30 @@ import java.time.LocalDate;
 @Builder
 @Value
 public class LoanStatementRequestDto {
-        @NotNull
-        @Min(20000)
-        BigDecimal amount;
-        @NotNull
-        @Min(6)
-        Integer term;
-        @NotNull
-        @Size(min = 2, max = 30)
-        String firstName;
-        @NotNull
-        @Size(min = 2, max = 30)
-        String lastName;
-        @Size(min = 2, max = 30)
-        String middleName;
-        @NotNull
-        @Pattern(regexp = "^[a-z0-9A-Z_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9A-Z.-]+$")
-        String email;
-        @NotNull
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        @ValidAge
-        LocalDate birthdate;
-        @NotNull
-        @Pattern(regexp = "^\\d{4}$")
-        String passportSeries;
-        @NotNull
-        @Pattern(regexp = "^\\d{6}$")
-        String passportNumber;
+    @NotNull
+    @Min(20000)
+    BigDecimal amount;
+    @NotNull
+    @Min(6)
+    Integer term;
+    @NotNull
+    @Size(min = 2, max = 30)
+    String firstName;
+    @NotNull
+    @Size(min = 2, max = 30)
+    String lastName;
+    @Size(min = 2, max = 30)
+    String middleName;
+    @NotNull
+    @Pattern(regexp = "^[a-z0-9A-Z_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9A-Z.-]+$")
+    String email;
+    @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    LocalDate birthdate;
+    @NotNull
+    @Pattern(regexp = "^\\d{4}$")
+    String passportSeries;
+    @NotNull
+    @Pattern(regexp = "^\\d{6}$")
+    String passportNumber;
 }

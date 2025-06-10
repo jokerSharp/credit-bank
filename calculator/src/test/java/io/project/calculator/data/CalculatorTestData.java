@@ -54,45 +54,65 @@ public class CalculatorTestData {
                     .rate(BigDecimal.valueOf(10.5)).isInsuranceEnabled(true).isSalaryClient(true).build()
     );
 
-    public static final EmploymentDto EMPLOYMENT_DTO_1 = new EmploymentDto(EmploymentStatus.EMPLOYED,
-            "123456789012",
-            BigDecimal.valueOf(5000),
-            Position.MIDDLE_MANAGER,
-            36,
-            18);
-
-    public static final EmploymentDto EMPLOYMENT_DTO_2 = new EmploymentDto(EmploymentStatus.BUSINESS_OWNER,
-            "123456789012",
-            BigDecimal.valueOf(7500),
-            Position.TOP_MANAGER,
-            24,
-            6);
-
-    public static final EmploymentDto EMPLOYMENT_DTO_3 = new EmploymentDto(EmploymentStatus.SELF_EMPLOYED,
-            "123456789012",
-            BigDecimal.valueOf(6050),
-            Position.LINEAR_EMPLOYEE,
-            50,
-            50);
-
-    public static final ScoringDataDto SCORING_DATA_DTO_1 = ScoringDataDto.builder()
-            .amount(BigDecimal.valueOf(100000))
-            .term(10)
-            .firstName("John")
-            .lastName("Doe")
-            .gender(Gender.MALE)
-            .birthdate(LocalDate.now().minusYears(40))
-            .passportSeries("1234")
-            .passportNumber("567890")
-            .passportIssueDate(LocalDate.now().minusYears(10))
-            .passportIssueBranch("Fleetwood st. 123")
-            .maritalStatus(MaritalStatus.DIVORCED)
-            .dependentAmount(1)
-            .employment(EMPLOYMENT_DTO_1)
-            .accountNumber("12345678901234567890")
-            .isInsuranceEnabled(true)
-            .isSalaryClient(false)
+    public static final EmploymentDto EMPLOYMENT_DTO_1 = EmploymentDto.builder()
+            .employmentStatus(EmploymentStatus.EMPLOYED)
+            .employerINN("123456789012")
+            .salary(BigDecimal.valueOf(5000))
+            .position(Position.MIDDLE_MANAGER)
+            .workExperienceTotal(36)
+            .workExperienceCurrent(18)
             .build();
+
+    public static final EmploymentDto EMPLOYMENT_DTO_2 = EmploymentDto.builder()
+            .employmentStatus(EmploymentStatus.BUSINESS_OWNER)
+            .employerINN("123456789012")
+            .salary(BigDecimal.valueOf(10000))
+            .position(Position.TOP_MANAGER)
+            .workExperienceTotal(24)
+            .workExperienceCurrent(6)
+            .build();
+
+    public static final EmploymentDto EMPLOYMENT_DTO_3 = EmploymentDto.builder()
+            .employmentStatus(EmploymentStatus.SELF_EMPLOYED)
+            .employerINN("123456789012")
+            .salary(BigDecimal.valueOf(6050))
+            .position(Position.LINEAR_EMPLOYEE)
+            .workExperienceTotal(50)
+            .workExperienceCurrent(50)
+            .build();
+
+    public static final EmploymentDto INSUFFICIENT_SALARY_EMPLOYMENT_DTO = EmploymentDto.builder()
+            .employmentStatus(EmploymentStatus.EMPLOYED)
+            .employerINN("123456789012")
+            .salary(BigDecimal.valueOf(1))
+            .position(Position.MIDDLE_MANAGER)
+            .workExperienceTotal(36)
+            .workExperienceCurrent(18)
+            .build();
+
+    public static final EmploymentDto UNEMPLOYED_EMPLOYMENT_DTO = EmploymentDto.builder()
+            .employmentStatus(EmploymentStatus.UNEMPLOYED)
+            .build();
+
+    public static final EmploymentDto INSUFFICIENT_TOTAL_EXPERIENCE_EMPLOYMENT_DTO = EmploymentDto.builder()
+            .employmentStatus(EmploymentStatus.SELF_EMPLOYED)
+            .employerINN("123456789012")
+            .salary(BigDecimal.valueOf(6050))
+            .position(Position.LINEAR_EMPLOYEE)
+            .workExperienceTotal(17)
+            .workExperienceCurrent(17)
+            .build();
+
+    public static final EmploymentDto INSUFFICIENT_CURRENT_EXPERIENCE_EMPLOYMENT_DTO = EmploymentDto.builder()
+            .employmentStatus(EmploymentStatus.SELF_EMPLOYED)
+            .employerINN("123456789012")
+            .salary(BigDecimal.valueOf(6050))
+            .position(Position.LINEAR_EMPLOYEE)
+            .workExperienceTotal(50)
+            .workExperienceCurrent(1)
+            .build();
+
+    public static final ScoringDataDto SCORING_DATA_DTO_1 = getScoringDataDtoWithDifferentEmployment(EMPLOYMENT_DTO_1);
 
     public static final ScoringDataDto SCORING_DATA_DTO_2 = ScoringDataDto.builder()
             .amount(BigDecimal.valueOf(200000))
@@ -114,7 +134,7 @@ public class CalculatorTestData {
             .build();
 
     public static final ScoringDataDto SCORING_DATA_DTO_3 = ScoringDataDto.builder()
-            .amount(BigDecimal.valueOf(150000))
+            .amount(BigDecimal.valueOf(120000))
             .term(12)
             .firstName("Magdalene")
             .lastName("Chante")
@@ -136,6 +156,56 @@ public class CalculatorTestData {
             .amount(BigDecimal.valueOf(0))
             .build();
 
+    public static final ScoringDataDto UNEMPLOYED_SCORING_DATA_DTO =
+            getScoringDataDtoWithDifferentEmployment(UNEMPLOYED_EMPLOYMENT_DTO);
+
+    public static final ScoringDataDto HIGH_AMOUNT_SCORING_DATA_DTO =
+            getScoringDataDtoWithDifferentEmployment(INSUFFICIENT_SALARY_EMPLOYMENT_DTO);
+
+    public static final ScoringDataDto INSUFFICIENT_TOTAL_EXPERIENCE_SCORING_DATA_DTO =
+            getScoringDataDtoWithDifferentEmployment(INSUFFICIENT_TOTAL_EXPERIENCE_EMPLOYMENT_DTO);
+
+    public static final ScoringDataDto INSUFFICIENT_CURRENT_EXPERIENCE_SCORING_DATA_DTO =
+            getScoringDataDtoWithDifferentEmployment(INSUFFICIENT_CURRENT_EXPERIENCE_EMPLOYMENT_DTO);
+
+    public static final ScoringDataDto TOO_YOUNG_SCORING_DATA_DTO = ScoringDataDto.builder()
+            .amount(BigDecimal.valueOf(200000))
+            .term(20)
+            .firstName("Joan")
+            .lastName("Doe")
+            .gender(Gender.FEMALE)
+            .birthdate(LocalDate.now().minusYears(19))
+            .passportSeries("1234")
+            .passportNumber("567890")
+            .passportIssueDate(LocalDate.now().minusYears(2))
+            .passportIssueBranch("Franzgasse 47")
+            .maritalStatus(MaritalStatus.MARRIED)
+            .dependentAmount(1)
+            .employment(EMPLOYMENT_DTO_2)
+            .accountNumber("12345678901234567890")
+            .isInsuranceEnabled(false)
+            .isSalaryClient(true)
+            .build();
+
+    public static final ScoringDataDto TOO_OLD_SCORING_DATA_DTO = ScoringDataDto.builder()
+            .amount(BigDecimal.valueOf(200000))
+            .term(20)
+            .firstName("Joan")
+            .lastName("Doe")
+            .gender(Gender.FEMALE)
+            .birthdate(LocalDate.now().minusYears(66))
+            .passportSeries("1234")
+            .passportNumber("567890")
+            .passportIssueDate(LocalDate.now().minusYears(2))
+            .passportIssueBranch("Franzgasse 47")
+            .maritalStatus(MaritalStatus.MARRIED)
+            .dependentAmount(1)
+            .employment(EMPLOYMENT_DTO_2)
+            .accountNumber("12345678901234567890")
+            .isInsuranceEnabled(false)
+            .isSalaryClient(true)
+            .build();
+
     public static final CreditDto CREDIT_DTO_1 = CreditDto.builder()
             .amount(BigDecimal.valueOf(100000))
             .term(10)
@@ -146,4 +216,25 @@ public class CalculatorTestData {
             .isSalaryClient(false)
             .paymentSchedule(List.of())
             .build();
+
+    public static ScoringDataDto getScoringDataDtoWithDifferentEmployment(EmploymentDto employmentDto) {
+        return ScoringDataDto.builder()
+                .amount(BigDecimal.valueOf(100000))
+                .term(10)
+                .firstName("John")
+                .lastName("Doe")
+                .gender(Gender.MALE)
+                .birthdate(LocalDate.now().minusYears(40))
+                .passportSeries("1234")
+                .passportNumber("567890")
+                .passportIssueDate(LocalDate.now().minusYears(10))
+                .passportIssueBranch("Fleetwood st. 123")
+                .maritalStatus(MaritalStatus.DIVORCED)
+                .dependentAmount(1)
+                .employment(employmentDto)
+                .accountNumber("12345678901234567890")
+                .isInsuranceEnabled(true)
+                .isSalaryClient(false)
+                .build();
+    }
 }

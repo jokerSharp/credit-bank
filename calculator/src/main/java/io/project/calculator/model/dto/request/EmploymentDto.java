@@ -26,13 +26,4 @@ public class EmploymentDto {
     Integer workExperienceTotal;
     @NotNull
     Integer workExperienceCurrent;
-
-    public EmploymentDto(EmploymentStatus employmentStatus, String employerINN, BigDecimal salary, Position position, Integer workExperienceTotal, Integer workExperienceCurrent) {
-        this.employmentStatus = employmentStatus;
-        this.employerINN = employerINN;
-        this.salary = salary;
-        this.position = position;
-        this.workExperienceTotal = workExperienceTotal;
-        this.workExperienceCurrent = workExperienceCurrent;
-    }
 }

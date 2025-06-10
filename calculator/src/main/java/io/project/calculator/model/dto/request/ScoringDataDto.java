@@ -2,7 +2,6 @@ package io.project.calculator.model.dto.request;
 
 import io.project.calculator.model.dto.enums.Gender;
 import io.project.calculator.model.dto.enums.MaritalStatus;
-import io.project.calculator.util.validation.ValidAge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -63,7 +62,6 @@ public class ScoringDataDto {
     Gender gender;
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @ValidAge
     LocalDate birthdate;
     @NotNull
     @Pattern(regexp = "^\\d{4}$")

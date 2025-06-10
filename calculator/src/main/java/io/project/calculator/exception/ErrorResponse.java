@@ -1,8 +1,8 @@
 package io.project.calculator.exception;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -13,8 +13,10 @@ import java.util.List;
 public class ErrorResponse {
 
     private LocalDateTime timestamp;
-    private List<CustomFieldError> fieldErrors;
+    private List<CustomFieldError> errors;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Builder
     @AllArgsConstructor
     @Getter
     public static class CustomFieldError {

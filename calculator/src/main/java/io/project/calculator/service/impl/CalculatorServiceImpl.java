@@ -4,7 +4,7 @@ import io.project.calculator.model.dto.request.ScoringDataDto;
 import io.project.calculator.model.dto.response.CreditDto;
 import io.project.calculator.model.dto.response.PaymentScheduleElementDto;
 import io.project.calculator.service.CalculatorService;
-import io.project.calculator.service.OfferService;
+import io.project.calculator.service.ScoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,17 +20,19 @@ import java.util.List;
 @Service
 public class CalculatorServiceImpl implements CalculatorService {
 
-    private final OfferService offerService;
+    private static final Integer BASE_PERIODS_AMOUNT_PER_YEAR = 12;
+    private static final Integer MONTHLY_INTEREST_RATE_DENOMINATOR = BASE_PERIODS_AMOUNT_PER_YEAR * 100;
+    private static final Integer DEFAULT_BINARY_SCALE = 2;
+    private static final Integer DEFAULT_DECIMAL_SCALE = 10;
+
+    private final ScoringService scoringService;
 
     @Override
     public CreditDto calculate(ScoringDataDto scoringDataDto) {
         log.info("received ScoringDataDto object={}", scoringDataDto);
-        BigDecimal adjustedRate = offerService.adjustRateToOption(scoringDataDto.getIsSalaryClient(),
-                scoringDataDto.getIsInsuranceEnabled());
-        BigDecimal actualRate = score(adjustedRate, scoringDataDto);
-        log.debug("actualRate={}", actualRate);
-        int numberOfPayments = scoringDataDto.getTerm() * 12;
-        BigDecimal monthlyPayment = offerService.calculateMonthlyPayment(scoringDataDto.getAmount(), actualRate, numberOfPayments);
+        BigDecimal actualRate = scoringService.score(scoringDataDto);
+        int numberOfPayments = scoringDataDto.getTerm() * BASE_PERIODS_AMOUNT_PER_YEAR;
+        BigDecimal monthlyPayment = calculateMonthlyPayment(scoringDataDto.getAmount(), actualRate, numberOfPayments);
         log.debug("monthlyPayment={}", monthlyPayment);
         BigDecimal psk = monthlyPayment.multiply(BigDecimal.valueOf(numberOfPayments));
         List<PaymentScheduleElementDto> paymentSchedule = composePaymentSchedule(numberOfPayments, monthlyPayment,
@@ -50,18 +51,27 @@ public class CalculatorServiceImpl implements CalculatorService {
         return creditDto;
     }
 
+    public BigDecimal calculateMonthlyPayment(BigDecimal requestedAmount,
+                                              BigDecimal annualRate,
+                                              Integer numberOfPayments) {
+        BigDecimal monthlyInterestRate = calculateMonthlyInterestRate(annualRate);
+        BigDecimal powerResult = BigDecimal.ONE.add(monthlyInterestRate).pow(numberOfPayments);
+        BigDecimal paymentNumerator = requestedAmount.multiply(monthlyInterestRate).multiply(powerResult);
+        BigDecimal paymentDenominator = powerResult.subtract(BigDecimal.ONE);
+        return paymentNumerator.divide(paymentDenominator, DEFAULT_BINARY_SCALE, RoundingMode.HALF_UP);
+    }
+
     private List<PaymentScheduleElementDto> composePaymentSchedule(int numberOfPayments,
                                                                    BigDecimal monthlyPayment,
-                                                                   BigDecimal actualRate,
+                                                                   BigDecimal annualRate,
                                                                    BigDecimal psk) {
         List<PaymentScheduleElementDto> paymentSchedule = new ArrayList<>();
         for (int i = 1; i <= numberOfPayments; i++) {
             LocalDate paymentDate = LocalDate.now().plusMonths(i);
             BigDecimal remainingDebt = psk.subtract(monthlyPayment.multiply(BigDecimal.valueOf(i)));
-            BigDecimal monthlyInterestRate = actualRate
-                    .divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP);
+            BigDecimal monthlyInterestRate = calculateMonthlyInterestRate(annualRate);
             BigDecimal interestPayment = remainingDebt.multiply(monthlyInterestRate)
-                    .setScale(2, RoundingMode.HALF_UP);
+                    .setScale(DEFAULT_BINARY_SCALE, RoundingMode.HALF_UP);
             paymentSchedule.add(PaymentScheduleElementDto.builder()
                     .number(i)
                     .date(paymentDate)
@@ -74,36 +84,8 @@ public class CalculatorServiceImpl implements CalculatorService {
         return paymentSchedule;
     }
 
-    private BigDecimal score(BigDecimal adjustedRate, ScoringDataDto scoringDataDto) {
-        BigDecimal resultRate = adjustedRate;
-        BigDecimal threePercent = BigDecimal.valueOf(3);
-
-        resultRate = switch (scoringDataDto.getEmployment().getEmploymentStatus()) {
-            case SELF_EMPLOYED -> resultRate.add(BigDecimal.TWO);
-            case BUSINESS_OWNER -> resultRate.add(BigDecimal.ONE);
-            default -> resultRate;
-        };
-
-        resultRate = switch (scoringDataDto.getEmployment().getPosition()) {
-            case TOP_MANAGER -> resultRate.subtract(threePercent);
-            case MIDDLE_MANAGER -> resultRate.subtract(BigDecimal.ONE);
-            case LINEAR_EMPLOYEE -> resultRate;
-        };
-
-        resultRate = switch (scoringDataDto.getMaritalStatus()) {
-            case MARRIED -> resultRate.subtract(threePercent);
-            case DIVORCED -> resultRate.add(BigDecimal.ONE);
-            case SINGLE -> resultRate;
-        };
-
-        int age = Period.between(scoringDataDto.getBirthdate(), LocalDate.now()).getYears();
-
-        resultRate = switch (scoringDataDto.getGender()) {
-            case MALE -> age >= 30 && age <= 55 ? resultRate.subtract(threePercent) : resultRate;
-            case FEMALE -> age >= 32 && age <= 60 ? resultRate.subtract(threePercent) : resultRate;
-            case NON_BINARY -> resultRate.add(BigDecimal.valueOf(7));
-        };
-
-        return resultRate;
+    private BigDecimal calculateMonthlyInterestRate(BigDecimal rate) {
+        return rate.divide(BigDecimal.valueOf(MONTHLY_INTEREST_RATE_DENOMINATOR),
+                DEFAULT_DECIMAL_SCALE, RoundingMode.HALF_UP);
     }
 }
