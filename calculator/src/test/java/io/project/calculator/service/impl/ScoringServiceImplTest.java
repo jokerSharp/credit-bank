@@ -30,7 +30,17 @@ class ScoringServiceImplTest {
     }
 
     @Test
-    void adjustRateToOption_ShouldReturnCorrectRate() {
+    void adjustRateToOption_ShouldReturnBaseRateWithoutOptions() {
+        //given
+        LoanOfferOption option = LoanOfferOption.NO_INSURANCE_NOT_SALARY_CLIENT;
+        //when
+        BigDecimal rate = scoringService.adjustRateToOption(option.isSalaryClient(), option.isInsuranceEnabled());
+        //then
+        assertEquals(BASE_RATE, rate);
+    }
+
+    @Test
+    void adjustRateToOption_ShouldReturnBestRateWithAllOptions() {
         //given
         LoanOfferOption option = LoanOfferOption.HAVE_INSURANCE_SALARY_CLIENT;
         //when
