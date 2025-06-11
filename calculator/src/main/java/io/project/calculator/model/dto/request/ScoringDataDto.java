@@ -2,17 +2,19 @@ package io.project.calculator.model.dto.request;
 
 import io.project.calculator.model.dto.enums.Gender;
 import io.project.calculator.model.dto.enums.MaritalStatus;
+import io.project.calculator.util.validation.group.NotBlankValidationGroup;
+import io.project.calculator.util.validation.group.PatternValidationGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.GroupSequence;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import static io.project.calculator.util.validation.MessageForRequestUtil.*;
 
 @Schema(example = """
         {
@@ -41,6 +43,7 @@ import java.time.LocalDate;
             "isSalaryClient": true
         }
         """)
+@GroupSequence({NotBlankValidationGroup.class, PatternValidationGroup.class, ScoringDataDto.class})
 @Builder
 @Value
 public class ScoringDataDto {
@@ -50,28 +53,28 @@ public class ScoringDataDto {
     @NotNull
     @Min(6)
     Integer term;
-    @NotNull
-    @Size(min = 2, max = 30)
+    @NotBlank(message = FIRST_NAME_EMPTY, groups = NotBlankValidationGroup.class)
+    @Size(min = 2, max = 30, message = FIRST_NAME_FORMAT, groups = PatternValidationGroup.class)
     String firstName;
-    @NotNull
-    @Size(min = 2, max = 30)
+    @NotBlank(message = LAST_NAME_EMPTY, groups = NotBlankValidationGroup.class)
+    @Size(min = 2, max = 30, message = LAST_NAME_FORMAT, groups = PatternValidationGroup.class)
     String lastName;
-    @Size(min = 2, max = 30)
+    @Size(min = 2, max = 30, message = MIDDLE_NAME_FORMAT, groups = PatternValidationGroup.class)
     String middleName;
     @NotNull
     Gender gender;
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate birthdate;
-    @NotNull
-    @Pattern(regexp = "^\\d{4}$")
+    @NotBlank(message = PASSPORT_SERIES_EMPTY, groups = NotBlankValidationGroup.class)
+    @Pattern(regexp = PASSPORT_SERIES_PATTERN, message = PASSPORT_SERIES_FORMAT, groups = PatternValidationGroup.class)
     String passportSeries;
-    @NotNull
-    @Pattern(regexp = "^\\d{6}$")
+    @NotBlank(message = PASSPORT_NUMBER_EMPTY, groups = NotBlankValidationGroup.class)
+    @Pattern(regexp = PASSPORT_NUMBER_PATTERN, message = PASSPORT_NUMBER_FORMAT, groups = PatternValidationGroup.class)
     String passportNumber;
     @NotNull
     LocalDate passportIssueDate;
-    @NotNull
+    @NotBlank(message = PASSPORT_ISSUE_BRANCH_EMPTY, groups = NotBlankValidationGroup.class)
     String passportIssueBranch;
     @NotNull
     MaritalStatus maritalStatus;
@@ -79,8 +82,8 @@ public class ScoringDataDto {
     Integer dependentAmount;
     @NotNull
     EmploymentDto employment;
-    @NotNull
-    @Pattern(regexp = "^\\d{20}$")
+    @NotBlank(message = ACCOUNT_NUMBER_EMPTY, groups = NotBlankValidationGroup.class)
+    @Pattern(regexp = ACCOUNT_NUMBER_PATTERN, message = ACCOUNT_NUMBER_FORMAT, groups = PatternValidationGroup.class)
     String accountNumber;
     @NotNull
     Boolean isInsuranceEnabled;
