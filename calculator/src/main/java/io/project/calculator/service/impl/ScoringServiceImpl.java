@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 
+import static io.project.calculator.util.validation.ScoringMessageUtil.*;
+
 @Slf4j
 @Service
 public class ScoringServiceImpl implements ScoringService {
@@ -38,7 +40,7 @@ public class ScoringServiceImpl implements ScoringService {
         EmploymentDto employment = scoringDataDto.getEmployment();
 
         resultRate = switch (employment.getEmploymentStatus()) {
-            case UNEMPLOYED -> throw new LoanRequestDeniedException("Client should have a work");
+            case UNEMPLOYED -> throw new LoanRequestDeniedException(CLIENT_HAS_NO_WORK_MESSAGE);
             case EMPLOYED -> resultRate;
             case SELF_EMPLOYED -> resultRate.add(BigDecimal.TWO);
             case BUSINESS_OWNER -> resultRate.add(BigDecimal.ONE);
@@ -52,7 +54,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         BigDecimal hugeRequestedAmount = employment.getSalary().multiply(BigDecimal.valueOf(24));
         if (scoringDataDto.getAmount().compareTo(hugeRequestedAmount) > 0) {
-            throw new LoanRequestDeniedException("Requested amount should be less than 24 client salaries");
+            throw new LoanRequestDeniedException(HIGH_REQUESTED_AMOUNT_MESSAGE);
         }
 
         resultRate = switch (scoringDataDto.getMaritalStatus()) {
@@ -64,7 +66,7 @@ public class ScoringServiceImpl implements ScoringService {
         int age = Period.between(scoringDataDto.getBirthdate(), LocalDate.now()).getYears();
 
         if (age < 20 || age > 65) {
-            throw new LoanRequestDeniedException("Client age should be between 20 and 65");
+            throw new LoanRequestDeniedException(INVALID_CLIENT_AGE_MESSAGE);
         }
 
         resultRate = switch (scoringDataDto.getGender()) {
@@ -74,11 +76,11 @@ public class ScoringServiceImpl implements ScoringService {
         };
 
         if (employment.getWorkExperienceTotal() < 18) {
-            throw new LoanRequestDeniedException("Client total work experience should at least 18 months");
+            throw new LoanRequestDeniedException(CLIENT_TOTAL_WORK_EXPERIENCE_MESSAGE);
         }
 
         if (employment.getWorkExperienceCurrent() < 3) {
-            throw new LoanRequestDeniedException("Client current work experience should at least 3 months");
+            throw new LoanRequestDeniedException(CLIENT_CURRENT_WORK_EXPERIENCE_MESSAGE);
         }
 
         log.debug("Result rate={}", resultRate);
