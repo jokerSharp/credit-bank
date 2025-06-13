@@ -1,6 +1,7 @@
 package io.project.calculator.service.impl;
 
 import io.project.calculator.data.CalculatorTestData;
+import io.project.calculator.exception.LoanRequestDeniedException;
 import io.project.calculator.model.dto.request.LoanStatementRequestDto;
 import io.project.calculator.model.dto.response.LoanOfferDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,11 +22,19 @@ class OfferServiceImplTest {
     private static final BigDecimal BASE_RATE = new BigDecimal("11.5");
 
     @InjectMocks
+    private ScoringServiceImpl scoringService;
+
+    @InjectMocks
     private OfferServiceImpl offerService;
+
+    @InjectMocks
+    private CalculatorServiceImpl calculatorService;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(offerService, "baseRate", BASE_RATE);
+        ReflectionTestUtils.setField(scoringService, "baseRate", BASE_RATE);
+        ReflectionTestUtils.setField(offerService, "scoringService", scoringService);
+        ReflectionTestUtils.setField(offerService, "calculatorService", calculatorService);
     }
 
     @Test
@@ -78,6 +87,14 @@ class OfferServiceImplTest {
             assertEquals(request.getAmount(), offer.getRequestedAmount());
             assertEquals(request.getTerm(), offer.getTerm());
         }
+    }
+
+    @Test
+    void offers_LoanRequestShouldBeDeclinedIfClientIsYounger18() {
+        //given
+        LoanStatementRequestDto request = CalculatorTestData.INVALID_LOAN_STATEMENT_REQUEST_DTO;
+        //then
+        assertThrows(LoanRequestDeniedException.class, () -> offerService.offers(request));
     }
 
 }

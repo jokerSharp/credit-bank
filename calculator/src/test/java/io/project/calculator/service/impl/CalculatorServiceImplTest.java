@@ -21,15 +21,15 @@ class CalculatorServiceImplTest {
     private static final BigDecimal BASE_RATE = new BigDecimal("11.5");
 
     @InjectMocks
-    private OfferServiceImpl offerService;
+    private ScoringServiceImpl scoringService;
 
     @InjectMocks
     private CalculatorServiceImpl calculatorService;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(offerService, "baseRate", BASE_RATE);
-        ReflectionTestUtils.setField(calculatorService, "offerService", offerService);
+        ReflectionTestUtils.setField(calculatorService, "scoringService", scoringService);
+        ReflectionTestUtils.setField(scoringService, "baseRate", BASE_RATE);
     }
 
     @Test

@@ -1,17 +1,18 @@
 package io.project.calculator.model.dto.request;
 
-import io.project.calculator.util.validation.ValidAge;
+import io.project.calculator.util.validation.group.NotBlankValidationGroup;
+import io.project.calculator.util.validation.group.PatternValidationGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.GroupSequence;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import static io.project.calculator.util.validation.MessageForRequestUtil.*;
 
 @Schema(example = """
         {
@@ -25,34 +26,34 @@ import java.time.LocalDate;
             "passportNumber": "567890"
         }
         """)
+@GroupSequence({NotBlankValidationGroup.class, PatternValidationGroup.class, LoanStatementRequestDto.class})
 @Builder
 @Value
 public class LoanStatementRequestDto {
-        @NotNull
-        @Min(20000)
-        BigDecimal amount;
-        @NotNull
-        @Min(6)
-        Integer term;
-        @NotNull
-        @Size(min = 2, max = 30)
-        String firstName;
-        @NotNull
-        @Size(min = 2, max = 30)
-        String lastName;
-        @Size(min = 2, max = 30)
-        String middleName;
-        @NotNull
-        @Pattern(regexp = "^[a-z0-9A-Z_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9A-Z.-]+$")
-        String email;
-        @NotNull
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        @ValidAge
-        LocalDate birthdate;
-        @NotNull
-        @Pattern(regexp = "^\\d{4}$")
-        String passportSeries;
-        @NotNull
-        @Pattern(regexp = "^\\d{6}$")
-        String passportNumber;
+    @NotNull
+    @Min(20000)
+    BigDecimal amount;
+    @NotNull
+    @Min(6)
+    Integer term;
+    @NotBlank(message = FIRST_NAME_EMPTY, groups = NotBlankValidationGroup.class)
+    @Size(min = 2, max = 30, message = FIRST_NAME_FORMAT, groups = PatternValidationGroup.class)
+    String firstName;
+    @NotBlank(message = LAST_NAME_EMPTY, groups = NotBlankValidationGroup.class)
+    @Size(min = 2, max = 30, message = LAST_NAME_FORMAT, groups = PatternValidationGroup.class)
+    String lastName;
+    @Size(min = 2, max = 30, message = MIDDLE_NAME_FORMAT, groups = PatternValidationGroup.class)
+    String middleName;
+    @NotBlank(message = MAIL_EMPTY, groups = NotBlankValidationGroup.class)
+    @Pattern(regexp = MAIL_PATTERN, message = MAIL_FORMAT, groups = PatternValidationGroup.class)
+    String email;
+    @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    LocalDate birthdate;
+    @NotBlank(message = PASSPORT_SERIES_EMPTY, groups = NotBlankValidationGroup.class)
+    @Pattern(regexp = PASSPORT_SERIES_PATTERN, message = PASSPORT_SERIES_FORMAT, groups = PatternValidationGroup.class)
+    String passportSeries;
+    @NotBlank(message = PASSPORT_NUMBER_EMPTY, groups = NotBlankValidationGroup.class)
+    @Pattern(regexp = PASSPORT_NUMBER_PATTERN, message = PASSPORT_NUMBER_FORMAT, groups = PatternValidationGroup.class)
+    String passportNumber;
 }
