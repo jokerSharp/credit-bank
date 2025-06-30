@@ -96,6 +96,7 @@ public class DealServiceImpl implements DealService {
         } catch (LoanRequestDeniedException e) {
             log.info("loan request was denied for statement={}", statementId);
             statementService.declineClientAfterScoring(statementId);
+            throw new LoanRequestDeniedException(e.getMessage());
         }
     }
 }

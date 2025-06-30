@@ -147,7 +147,9 @@ class DealServiceImplTest {
         when(dealFeignClient.sendScoringDataRequest(DealTestData.INVALID_SCORING_DATA_DTO))
                 .thenThrow(new LoanRequestDeniedException("Loan request denied"));
 
-        dealService.processCredit(DealTestData.UNEMPLOYED_FINISH_REGISTRATION_REQUEST_DTO, DealTestData.STATEMENT_ID.toString());
+        assertThrows(LoanRequestDeniedException.class,
+                () -> dealService.processCredit(DealTestData.UNEMPLOYED_FINISH_REGISTRATION_REQUEST_DTO, DealTestData.STATEMENT_ID.toString()));
+
 
         verify(dealFeignClient).sendScoringDataRequest(DealTestData.INVALID_SCORING_DATA_DTO);
         verify(creditService, never()).create(any(CreditDto.class));

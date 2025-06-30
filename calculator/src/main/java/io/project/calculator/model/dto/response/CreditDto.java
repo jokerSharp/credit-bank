@@ -4,11 +4,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import lombok.ToString;
 import lombok.Value;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@ToString(exclude = "paymentSchedule")
 @Builder
 @Value
 public class CreditDto {
