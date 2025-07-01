@@ -2,7 +2,7 @@ package io.project.deal.service.impl;
 
 import io.project.deal.mapper.StatementMapper;
 import io.project.deal.mapper.StatementStatusHistoryMapper;
-import io.project.deal.model.dto.StatementStatusHistoryDto;
+import io.project.deal.model.dto.response.StatementStatusHistoryDto;
 import io.project.deal.model.dto.response.LoanOfferDto;
 import io.project.deal.model.entity.Client;
 import io.project.deal.model.entity.Credit;

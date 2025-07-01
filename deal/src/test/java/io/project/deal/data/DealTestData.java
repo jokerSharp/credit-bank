@@ -1,6 +1,6 @@
 package io.project.deal.data;
 
-import io.project.deal.model.dto.StatementStatusHistoryDto;
+import io.project.deal.model.dto.response.StatementStatusHistoryDto;
 import io.project.deal.model.dto.request.EmploymentDto;
 import io.project.deal.model.dto.request.FinishRegistrationRequestDto;
 import io.project.deal.model.dto.request.LoanStatementRequestDto;

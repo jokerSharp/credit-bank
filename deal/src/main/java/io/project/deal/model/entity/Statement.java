@@ -1,6 +1,6 @@
 package io.project.deal.model.entity;
 
-import io.project.deal.model.dto.StatementStatusHistoryDto;
+import io.project.deal.model.dto.response.StatementStatusHistoryDto;
 import io.project.deal.model.dto.response.LoanOfferDto;
 import io.project.deal.model.enums.ApplicationStatus;
 import jakarta.persistence.*;

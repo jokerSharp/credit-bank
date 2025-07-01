@@ -1,4 +1,4 @@
-package io.project.deal.model.dto;
+package io.project.deal.model.dto.response;
 
 import io.project.deal.model.enums.ApplicationStatus;
 import io.project.deal.model.enums.ChangeType;

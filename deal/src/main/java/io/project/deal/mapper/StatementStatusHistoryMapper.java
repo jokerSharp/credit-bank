@@ -1,6 +1,6 @@
 package io.project.deal.mapper;
 
-import io.project.deal.model.dto.StatementStatusHistoryDto;
+import io.project.deal.model.dto.response.StatementStatusHistoryDto;
 import io.project.deal.model.entity.Statement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

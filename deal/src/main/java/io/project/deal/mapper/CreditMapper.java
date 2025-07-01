@@ -8,6 +8,4 @@ import org.mapstruct.Mapper;
 public interface CreditMapper {
 
     Credit toEntity(CreditDto creditDto);
-
-    CreditDto toDto(Credit credit);
 }
