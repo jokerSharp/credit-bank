@@ -11,7 +11,6 @@ import java.util.UUID;
 @Builder
 @Value
 public class LoanOfferDto {
-    @NotNull
     UUID statementId;
     @NotNull
     @Min(20000)

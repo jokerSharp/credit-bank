@@ -58,7 +58,7 @@ public class CalculatorTestData {
             .employmentStatus(EmploymentStatus.EMPLOYED)
             .employerINN("123456789012")
             .salary(BigDecimal.valueOf(5000))
-            .position(Position.MIDDLE_MANAGER)
+            .position(Position.MID_MANAGER)
             .workExperienceTotal(36)
             .workExperienceCurrent(18)
             .build();
@@ -76,7 +76,7 @@ public class CalculatorTestData {
             .employmentStatus(EmploymentStatus.SELF_EMPLOYED)
             .employerINN("123456789012")
             .salary(BigDecimal.valueOf(6050))
-            .position(Position.LINEAR_EMPLOYEE)
+            .position(Position.WORKER)
             .workExperienceTotal(50)
             .workExperienceCurrent(50)
             .build();
@@ -85,7 +85,7 @@ public class CalculatorTestData {
             .employmentStatus(EmploymentStatus.EMPLOYED)
             .employerINN("123456789012")
             .salary(BigDecimal.valueOf(1))
-            .position(Position.MIDDLE_MANAGER)
+            .position(Position.MID_MANAGER)
             .workExperienceTotal(36)
             .workExperienceCurrent(18)
             .build();
@@ -98,7 +98,7 @@ public class CalculatorTestData {
             .employmentStatus(EmploymentStatus.SELF_EMPLOYED)
             .employerINN("123456789012")
             .salary(BigDecimal.valueOf(6050))
-            .position(Position.LINEAR_EMPLOYEE)
+            .position(Position.WORKER)
             .workExperienceTotal(17)
             .workExperienceCurrent(17)
             .build();
@@ -107,7 +107,7 @@ public class CalculatorTestData {
             .employmentStatus(EmploymentStatus.SELF_EMPLOYED)
             .employerINN("123456789012")
             .salary(BigDecimal.valueOf(6050))
-            .position(Position.LINEAR_EMPLOYEE)
+            .position(Position.WORKER)
             .workExperienceTotal(50)
             .workExperienceCurrent(1)
             .build();

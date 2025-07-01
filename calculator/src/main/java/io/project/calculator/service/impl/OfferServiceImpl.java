@@ -46,7 +46,6 @@ public class OfferServiceImpl implements OfferService {
                     .calculateMonthlyPayment(loanStatementRequestDto.getAmount(), adjustedRate, numberOfPayments);
             BigDecimal psk = monthlyPayment.multiply(BigDecimal.valueOf(numberOfPayments));
             offers.add(LoanOfferDto.builder()
-                    .statementId(UUID.randomUUID())
                     .requestedAmount(loanStatementRequestDto.getAmount())
                     .totalAmount(psk)
                     .term(loanStatementRequestDto.getTerm())

@@ -48,8 +48,8 @@ public class ScoringServiceImpl implements ScoringService {
 
         resultRate = switch (employment.getPosition()) {
             case TOP_MANAGER -> resultRate.subtract(threePercent);
-            case MIDDLE_MANAGER -> resultRate.subtract(BigDecimal.ONE);
-            case LINEAR_EMPLOYEE -> resultRate;
+            case MID_MANAGER -> resultRate.subtract(BigDecimal.ONE);
+            case WORKER, OWNER -> resultRate;
         };
 
         BigDecimal hugeRequestedAmount = employment.getSalary().multiply(BigDecimal.valueOf(24));
@@ -60,7 +60,7 @@ public class ScoringServiceImpl implements ScoringService {
         resultRate = switch (scoringDataDto.getMaritalStatus()) {
             case MARRIED -> resultRate.subtract(threePercent);
             case DIVORCED -> resultRate.add(BigDecimal.ONE);
-            case SINGLE -> resultRate;
+            case SINGLE, WIDOW_WIDOWER -> resultRate;
         };
 
         int age = Period.between(scoringDataDto.getBirthdate(), LocalDate.now()).getYears();
