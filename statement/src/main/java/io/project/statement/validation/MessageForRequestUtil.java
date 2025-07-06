@@ -1,4 +1,4 @@
-package io.project.deal.util.validation;
+package io.project.statement.validation;
 
 import lombok.experimental.UtilityClass;
 

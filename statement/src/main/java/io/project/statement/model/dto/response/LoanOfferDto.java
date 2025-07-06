@@ -1,7 +1,7 @@
-package io.project.deal.model.dto.response;
+package io.project.statement.model.dto.response;
 
-import io.project.deal.util.validation.group.NotBlankValidationGroup;
-import io.project.deal.util.validation.group.PatternValidationGroup;
+import io.project.statement.validation.group.NotBlankValidationGroup;
+import io.project.statement.validation.group.PatternValidationGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.Min;
@@ -12,7 +12,7 @@ import lombok.Value;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static io.project.deal.util.validation.MessageForRequestUtil.*;
+import static io.project.statement.validation.MessageForRequestUtil.*;
 
 @Schema(example = """
         {

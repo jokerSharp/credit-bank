@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-passport-table
+      author: jokerSharp
+      changes:
+        - createTable:
+            tableName: passport
+            columns:
+              - column:
+                  name: passport_id
+                  type: UUID
+                  defaultValueComputed: "gen_random_uuid()"
+                  constraints:
+                    primaryKey: true
+#                    nullable: false
+              - column:
+                  name: series
+                  type: VARCHAR(4)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number
+                  type: VARCHAR(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: issue_branch
+                  type: VARCHAR
+              - column:
+                  name: issue_date
+                  type: DATE

@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-statement-table
+      author: jokerSharp
+      changes:
+        - createTable:
+            tableName: statement
+            columns:
+              - column:
+                  name: statement_id
+                  type: UUID
+                  defaultValueComputed: "gen_random_uuid()"
+                  constraints:
+                    primaryKey: true
+#                    nullable: false
+              - column:
+                  name: client_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: credit_id
+                  type: UUID
+              - column:
+                  name: status
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: applied_offer
+                  type: JSONB
+              - column:
+                  name: sign_date
+                  type: TIMESTAMP
+              - column:
+                  name: ses_code
+                  type: VARCHAR
+              - column:
+                  name: status_history
+                  type: JSONB
+
+        - addForeignKeyConstraint:
+            baseTableName: statement
+            baseColumnNames: client_id
+            referencedTableName: client
+            referencedColumnNames: client_id
+            constraintName: fk_statement_client
+
+        - addForeignKeyConstraint:
+            baseTableName: statement
+            baseColumnNames: credit_id
+            referencedTableName: credit
+            referencedColumnNames: credit_id
+            constraintName: fk_statement_credit

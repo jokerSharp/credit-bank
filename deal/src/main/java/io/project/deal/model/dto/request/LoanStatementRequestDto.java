@@ -14,7 +14,6 @@ import java.time.LocalDate;
 
 import static io.project.deal.util.validation.MessageForRequestUtil.*;
 
-
 @Schema(example = """
         {
             "amount": "123000",
@@ -31,11 +30,11 @@ import static io.project.deal.util.validation.MessageForRequestUtil.*;
 @Builder
 @Value
 public class LoanStatementRequestDto {
-    @NotNull
-    @Min(20000)
+    @NotNull(message = REQUESTED_AMOUNT_EMPTY, groups = NotBlankValidationGroup.class)
+    @Min(value = 20000, message = REQUESTED_AMOUNT_FORMAT, groups = PatternValidationGroup.class)
     BigDecimal amount;
-    @NotNull
-    @Min(6)
+    @NotNull(message = TERM_EMPTY, groups = NotBlankValidationGroup.class)
+    @Min(value = 6, message = TERM_FORMAT, groups = PatternValidationGroup.class)
     Integer term;
     @NotBlank(message = FIRST_NAME_EMPTY, groups = NotBlankValidationGroup.class)
     @Size(min = 2, max = 30, message = FIRST_NAME_FORMAT, groups = PatternValidationGroup.class)
@@ -48,7 +47,7 @@ public class LoanStatementRequestDto {
     @NotBlank(message = MAIL_EMPTY, groups = NotBlankValidationGroup.class)
     @Pattern(regexp = MAIL_PATTERN, message = MAIL_FORMAT, groups = PatternValidationGroup.class)
     String email;
-    @NotNull
+    @NotNull(message = BIRTHDATE_EMPTY, groups = NotBlankValidationGroup.class)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     LocalDate birthdate;
     @NotBlank(message = PASSPORT_SERIES_EMPTY, groups = NotBlankValidationGroup.class)
