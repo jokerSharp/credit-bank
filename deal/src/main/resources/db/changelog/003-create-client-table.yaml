@@ -12,7 +12,6 @@ databaseChangeLog:
                   defaultValueComputed: "gen_random_uuid()"
                   constraints:
                     primaryKey: true
-#                    nullable: false
               - column:
                   name: first_name
                   type: VARCHAR(30)
@@ -70,3 +69,7 @@ databaseChangeLog:
             referencedTableName: employment
             referencedColumnNames: employment_id
             constraintName: fk_client_employment
+
+      rollback:
+        - dropTable:
+            tableName: client

@@ -12,7 +12,6 @@ databaseChangeLog:
                   defaultValueComputed: "gen_random_uuid()"
                   constraints:
                     primaryKey: true
-#                    nullable: false
               - column:
                   name: series
                   type: VARCHAR(4)
@@ -29,3 +28,7 @@ databaseChangeLog:
               - column:
                   name: issue_date
                   type: DATE
+
+      rollback:
+        - dropTable:
+            tableName: passport

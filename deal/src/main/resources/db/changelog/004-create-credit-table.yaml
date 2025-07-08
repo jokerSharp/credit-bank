@@ -12,7 +12,6 @@ databaseChangeLog:
                   defaultValueComputed: "gen_random_uuid()"
                   constraints:
                     primaryKey: true
-#                    nullable: false
               - column:
                   name: amount
                   type: DECIMAL(21,2)
@@ -56,3 +55,7 @@ databaseChangeLog:
               - column:
                   name: credit_status
                   type: VARCHAR
+
+      rollback:
+        - dropTable:
+            tableName: credit

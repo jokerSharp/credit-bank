@@ -24,14 +24,13 @@ public class StatementServiceImpl implements StatementService {
 
     @Override
     public List<LoanOfferDto> sendStatement(LoanStatementRequestDto loanStatementRequestDto) {
-        log.info("sending loan request={}", loanStatementRequestDto);
         int age = Period.between(loanStatementRequestDto.getBirthdate(), LocalDate.now()).getYears();
         if (age < 18) {
+            log.error(CLIENT_UNDERAGE_MESSAGE);
             throw new LoanRequestDeniedException(CLIENT_UNDERAGE_MESSAGE);
         }
-        List<LoanOfferDto> loanOffers = statementFeignClient.sendLoanStatementRequest(loanStatementRequestDto);
-        log.info("received loan offers={}", loanOffers);
-        return loanOffers;
+        log.info("receiving loan offer for request={}", loanStatementRequestDto);
+        return statementFeignClient.sendLoanStatementRequest(loanStatementRequestDto);
     }
 
     @Override

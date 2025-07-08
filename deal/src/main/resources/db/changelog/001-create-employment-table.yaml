@@ -12,7 +12,6 @@ databaseChangeLog:
                   defaultValueComputed: "gen_random_uuid()"
                   constraints:
                     primaryKey: true
-#                    nullable: false
               - column:
                   name: status
                   type: VARCHAR
@@ -43,3 +42,7 @@ databaseChangeLog:
                   type: INTEGER
                   constraints:
                     nullable: false
+
+      rollback:
+        - dropTable:
+            tableName: employment
