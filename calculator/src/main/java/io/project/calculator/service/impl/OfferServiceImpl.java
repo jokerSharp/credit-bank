@@ -35,6 +35,7 @@ public class OfferServiceImpl implements OfferService {
         log.info("received LoanStatementRequestDto object={}", loanStatementRequestDto);
         int age = Period.between(loanStatementRequestDto.getBirthdate(), LocalDate.now()).getYears();
         if (age < 18) {
+            log.error(CLIENT_UNDERAGE_MESSAGE);
             throw new LoanRequestDeniedException(CLIENT_UNDERAGE_MESSAGE);
         }
         int numberOfPayments = loanStatementRequestDto.getTerm() * BASE_PERIODS_AMOUNT_PER_YEAR;

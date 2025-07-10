@@ -1,7 +1,7 @@
-package io.project.calculator.model.dto.request;
+package io.project.statement.model.dto.request;
 
-import io.project.calculator.util.validation.group.NotBlankValidationGroup;
-import io.project.calculator.util.validation.group.PatternValidationGroup;
+import io.project.statement.validation.group.NotBlankValidationGroup;
+import io.project.statement.validation.group.PatternValidationGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static io.project.calculator.util.validation.MessageForRequestUtil.*;
+import static io.project.statement.validation.MessageForRequestUtil.*;
 
 @Schema(example = """
         {

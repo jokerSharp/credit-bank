@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "loan-statement-client",
+@FeignClient(name = "deal-client",
         url = "http://localhost:8080",
         configuration = FeignClientConfiguration.class)
 public interface DealFeignClient {

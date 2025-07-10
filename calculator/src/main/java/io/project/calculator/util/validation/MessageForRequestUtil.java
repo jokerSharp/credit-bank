@@ -34,4 +34,24 @@ public class MessageForRequestUtil {
     public static final String ACCOUNT_NUMBER_PATTERN = "^\\d{20}$";
     public static final String ACCOUNT_NUMBER_EMPTY = "Не указан номер счета клиента";
     public static final String ACCOUNT_NUMBER_FORMAT = "Номер счета должен содержать 20 цифр";
+
+    public static final String REQUESTED_AMOUNT_EMPTY = "Не указана сумма кредита";
+    public static final String REQUESTED_AMOUNT_FORMAT = "Сумма кредита должна быть не менее 20000";
+
+    public static final String TERM_EMPTY = "Не указан срок кредита";
+    public static final String TERM_FORMAT = "Срок кредита должен быть не менее 6 месяцев";
+
+    public static final String BIRTHDATE_EMPTY = "Не указана дата рождения клиента";
+
+    public static final String STATEMENT_ID_EMPTY = "Не указан id заявки";
+
+    public static final String TOTAL_AMOUNT_EMPTY = "Не указана полная стоимость кредита";
+
+    public static final String MONTHLY_PAYMENT_EMPTY = "Не указана сумма ежемесячного платежа";
+
+    public static final String RATE_EMPTY = "Не указана процентная ставка кредита";
+
+    public static final String INSURANCE_OPTION_EMPTY = "Не указана опция страхования";
+
+    public static final String SALARY_CLIENT_OPTION_EMPTY = "Не указана опция зарплатного клиента";
 }

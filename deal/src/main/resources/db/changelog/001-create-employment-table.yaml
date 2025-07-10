@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-employment-table
+      author: jokerSharp
+      changes:
+        - createTable:
+            tableName: employment
+            columns:
+              - column:
+                  name: employment_id
+                  type: UUID
+                  defaultValueComputed: "gen_random_uuid()"
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: status
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: employer_inn
+                  type: VARCHAR(12)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: salary
+                  type: DECIMAL(21,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: work_experience_total
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: work_experience_current
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+      rollback:
+        - dropTable:
+            tableName: employment

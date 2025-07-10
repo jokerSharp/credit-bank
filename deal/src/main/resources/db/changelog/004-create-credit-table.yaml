@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-credit-table
+      author: jokerSharp
+      changes:
+        - createTable:
+            tableName: credit
+            columns:
+              - column:
+                  name: credit_id
+                  type: UUID
+                  defaultValueComputed: "gen_random_uuid()"
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: amount
+                  type: DECIMAL(21,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: term
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: monthly_payment
+                  type: DECIMAL(21,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rate
+                  type: DECIMAL(5,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: psk
+                  type: DECIMAL(21,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_schedule
+                  type: JSONB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: insurance_enabled
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: salary_client
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: credit_status
+                  type: VARCHAR
+
+      rollback:
+        - dropTable:
+            tableName: credit
