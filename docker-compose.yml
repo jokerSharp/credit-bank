@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: deal
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  calculator:
+    build:
+      context: ./calculator
+    ports:
+      - "8080:8080"
+    networks:
+      - microservices-network
+
+  deal:
+    build:
+      context: ./deal
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/deal
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - CALCULATOR_LOCATION=http://calculator:8080
+    depends_on:
+      - postgres
+    networks:
+      - microservices-network
+
+  statement:
+    build:
+      context: ./statement
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DEAL_LOCATION=http://deal:8081
+    networks:
+      - microservices-network
+
+volumes:
+  postgres_data:
+
+networks:
+  microservices-network:
+    driver: bridge
