@@ -12,6 +12,27 @@ services:
     networks:
       - microservices-network
 
+  broker:
+    image: apache/kafka:4.1.0-rc0
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_CREATE_TOPICS: 'finish-registration:1:1,create-documents:1:1,send-documents:1:1,send-ses:1:1,credit-issued:1:1,statement-denied:1:1'
+    networks:
+      - microservices-network
+
   calculator:
     build:
       context: ./calculator
@@ -31,6 +52,10 @@ services:
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=postgres
       - CALCULATOR_LOCATION=http://calculator:8080
+      - BROKER_LOCATION=broker:9092
+      - FINISH_REGISTRATION=localhost:8081/swagger-ui/index.html#/deal-controller-impl/calculateCredit
+      - CREATE_DOCUMENTS=http://localhost:8081/swagger-ui/index.html#/deal-controller-impl/sendDocuments
+      - SEND_CODE=http://localhost:8081/swagger-ui/index.html#/deal-controller-impl/sendCode
     depends_on:
       - postgres
     networks:
@@ -44,6 +69,22 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DEAL_LOCATION=http://deal:8081
+    networks:
+      - microservices-network
+
+  dossier:
+    build:
+      context: ./dossier
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - BROKER_LOCATION=broker:9092
+      - SIGN_DOCUMENTS=http://localhost:8081/swagger-ui/index.html#/deal-controller-impl/signDocuments
+      - USERNAME=insert-your-mail
+      - PASSWORD=insert-your-password
+    depends_on:
+      - broker
     networks:
       - microservices-network
 

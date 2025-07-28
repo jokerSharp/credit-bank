@@ -5,4 +5,6 @@ import io.project.deal.model.entity.Credit;
 
 public interface CreditService {
     Credit create(CreditDto creditDto);
+
+    Credit update(Credit credit);
 }

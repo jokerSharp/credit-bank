@@ -34,6 +34,9 @@ class DealControllerImplTest {
     private static final String STATEMENT_REQUEST = ROOT_DEAL_MAPPING + STATEMENT_MAPPING;
     private static final String OFFER_SELECT_REQUEST = ROOT_DEAL_MAPPING + OFFER_SELECT_MAPPING;
     private static final String CALCULATE_CREDIT_REQUEST = ROOT_DEAL_MAPPING + CALCULATE_MAPPING + DealTestData.STATEMENT_ID;
+    private static final String SEND_DOCUMENTS_REQUEST = CALCULATE_CREDIT_REQUEST + SEND_DOCUMENT_MAPPING;
+    private static final String SIGN_DOCUMENTS_REQUEST = CALCULATE_CREDIT_REQUEST + SIGN_DOCUMENT_MAPPING;
+    private static final String SEND_CODE_REQUEST = CALCULATE_CREDIT_REQUEST + SES_CODE_MAPPING;
 
     @Autowired
     private MockMvc mockMvc;
@@ -141,5 +144,40 @@ class DealControllerImplTest {
                 .andExpect(status().isBadRequest());
         verify(dealService, times(1))
                 .processCredit(DealTestData.VALID_FINISH_REGISTRATION_REQUEST_DTO, DealTestData.STATEMENT_ID.toString());
+    }
+
+    @Test
+    void sendDocuments_callsStatementService() throws Exception {
+        doNothing().when(statementService).prepareDocuments(DealTestData.STATEMENT_ID.toString());
+
+        mockMvc.perform(MockMvcRequestBuilders.post(SEND_DOCUMENTS_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(statementService, times(1))
+                .prepareDocuments(DealTestData.STATEMENT_ID.toString());
+    }
+
+    @Test
+    void signDocuments_callsStatementService() throws Exception {
+        doNothing().when(statementService).signDocuments(DealTestData.STATEMENT_ID.toString());
+
+        mockMvc.perform(MockMvcRequestBuilders.post(SIGN_DOCUMENTS_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(statementService, times(1))
+                .signDocuments(DealTestData.STATEMENT_ID.toString());
+    }
+
+    @Test
+    void sendCode_callsDealService() throws Exception {
+        doNothing().when(statementService)
+                .verifySesCode(DealTestData.STATEMENT_ID.toString(), DealTestData.ONLY_SES_CODE_REQUEST_MESSAGE);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(SEND_CODE_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(DealTestData.ONLY_SES_CODE_REQUEST_MESSAGE)))
+                .andExpect(status().isOk());
+        verify(statementService, times(1))
+                .verifySesCode(DealTestData.STATEMENT_ID.toString(), DealTestData.ONLY_SES_CODE_REQUEST_MESSAGE);
     }
 }
