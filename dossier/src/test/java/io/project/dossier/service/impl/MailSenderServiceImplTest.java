@@ -73,35 +73,4 @@ class MailSenderServiceImplTest {
         verify(mailSender).send(mimeMessageMock);
         verify(documentService).generateCreditPdf(emailMessageDto.getText());
     }
-//
-//    @Test
-//    void sendEmailWithAttachment_shouldLogErrorOnMessagingException() throws Exception {
-//        // Arrange
-//        EmailMessageDto emailMessageDto = EmailMessageDto.builder()
-//                .address("to@example.com")
-//                .theme(ThemeDTO.builder().themeValue("Subject").build())
-//                .text("Body text")
-//                .build();
-//
-//        MimeMessage mimeMessageMock = mock(MimeMessage.class);
-//        when(mailSender.createMimeMessage()).thenReturn(mimeMessageMock);
-//
-//        // Spy MimeMessageHelper creation to throw MessagingException (simulate error)
-//        // Since MimeMessageHelper constructor throws MessagingException,
-//        // we can simulate throwing it via a spy or wrapper - but it's tricky because of inline construction.
-//
-//        // Alternative: partially test with a subclass or refactor sendEmailWithAttachment to extract method for testability.
-//        // For this example, we mock mailSender.send to throw after MimeMessage created.
-//
-//        // Make mailSender.send throw MessagingException
-//        doThrow(new MessagingException("Simulated failure")).when(mailSender).send(any(MimeMessage.class));
-//
-//        // Act
-//        mailSenderService.sendEmailWithAttachment(emailMessageDto);
-//
-//        // Assert
-//        verify(mailSender).createMimeMessage();
-//        verify(mailSender).send(mimeMessageMock);
-//        verify(documentService).generateCreditPdf(emailMessageDto.getText());
-//    }
 }

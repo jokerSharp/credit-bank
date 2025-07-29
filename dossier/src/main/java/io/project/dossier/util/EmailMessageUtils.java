@@ -11,7 +11,7 @@ public class EmailMessageUtils {
     }
 
     public static String createDocumentsMailMessage(String url) {
-        String actualMessage = "Ваша заявка одобрена, сформируйте пакет документов, перейдя по ссылке %s".formatted(url);
+        String actualMessage = "Ваша заявка одобрена. Для формирования документов перейдите по ссылке %s".formatted(url);
         return getTemplateEmailMessage(actualMessage);
     }
 
