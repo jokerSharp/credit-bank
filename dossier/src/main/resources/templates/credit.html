@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Ипотечный договор</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: right;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Ипотечный договор</h1>
+<p>
+    Данный договор описывает условия предоставления Клиенту ипотечного займа.
+    Подписывается в трех экземплярах, имеющих одинаковую юридическую силу.
+</p>
+
+<h1>Сводная информация по кредиту</h1>
+
+<div>
+    <p><strong>Номер договора:</strong> <span th:text="${credit.creditId}"></span></p>
+    <p><strong>Сумма кредита:</strong> <span
+            th:text="${#numbers.formatDecimal(credit.amount, 1, 'COMMA', 2, 'POINT')}"></span></p>
+    <p><strong>Срок (лет):</strong> <span th:text="${credit.term}">10</span></p>
+    <p><strong>Ежемесячный платеж:</strong> <span
+            th:text="${#numbers.formatDecimal(credit.monthlyPayment, 1, 'COMMA', 2, 'POINT')}"></span></p>
+    <p><strong>Процентная ставка:</strong> <span th:text="${credit.rate}">7.50</span></p>
+    <p><strong>Полная сумма кредита:</strong> <span
+            th:text="${#numbers.formatDecimal(credit.psk, 1, 'COMMA', 2, 'POINT')}"></span></p>
+</div>
+
+<h2>График платежей</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Номер п/п</th>
+        <th>Дата</th>
+        <th>Итого</th>
+        <th>Платеж по процентам</th>
+        <th>Сумма основного долга</th>
+        <th>Остаток задолженности</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="ps : ${credit.paymentSchedule}">
+        <td th:text="${ps.number}"></td>
+        <td th:text="${#temporals.format(ps.date, 'dd.MM.yyyy')}"></td>
+        <td th:text="${#numbers.formatDecimal(ps.totalPayment, 1, 'COMMA', 2, 'POINT')}"></td>
+        <td th:text="${#numbers.formatDecimal(ps.interestPayment, 1, 'COMMA', 2, 'POINT')}"></td>
+        <td th:text="${#numbers.formatDecimal(ps.debtPayment, 1, 'COMMA', 2, 'POINT')}"></td>
+        <td th:text="${#numbers.formatDecimal(ps.remainingDebt, 1, 'COMMA', 2, 'POINT')}"></td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<p>Дата</p>
+<br>
+<p>Подпись</p>
+
+</body>
+</html>

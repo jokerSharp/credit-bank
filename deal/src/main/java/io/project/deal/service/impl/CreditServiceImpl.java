@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static io.project.deal.util.validation.MessageForException.entityIdIsNullMessage;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -26,6 +28,18 @@ public class CreditServiceImpl implements CreditService {
         Credit credit = creditMapper.toEntity(creditDto);
         credit.setCreditStatus(CreditStatus.CALCULATED);
         log.info("creating credit={}", credit);
+        return creditRepository.save(credit);
+    }
+
+    @Transactional
+    @Override
+    public Credit update(Credit credit) {
+        if (credit.getCreditId() == null) {
+            log.error(entityIdIsNullMessage(Credit.class));
+            throw new IllegalArgumentException(entityIdIsNullMessage(Credit.class));
+        }
+        credit.setCreditStatus(CreditStatus.ISSUED);
+        log.info("issuing credit={}", credit);
         return creditRepository.save(credit);
     }
 }

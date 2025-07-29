@@ -1,6 +1,7 @@
 package io.project.deal.controller.impl;
 
 import io.project.deal.controller.DealController;
+import io.project.deal.model.dto.request.EmailMessageDto;
 import io.project.deal.model.dto.request.FinishRegistrationRequestDto;
 import io.project.deal.model.dto.request.LoanStatementRequestDto;
 import io.project.deal.model.dto.response.LoanOfferDto;
@@ -21,6 +22,9 @@ public class DealControllerImpl implements DealController {
     public static final String STATEMENT_MAPPING = "/statement";
     public static final String OFFER_SELECT_MAPPING = "/offer/select";
     public static final String CALCULATE_MAPPING = "/calculate/";
+    public static final String SEND_DOCUMENT_MAPPING = "/send";
+    public static final String SIGN_DOCUMENT_MAPPING = "/sign";
+    public static final String SES_CODE_MAPPING = "/code";
 
     private final StatementService statementService;
 
@@ -43,5 +47,23 @@ public class DealControllerImpl implements DealController {
     public void calculateCredit(@RequestBody @Valid FinishRegistrationRequestDto finishRegistrationRequestDto,
                                 @PathVariable String statementId) {
         dealService.processCredit(finishRegistrationRequestDto, statementId);
+    }
+
+    @PostMapping(CALCULATE_MAPPING + "{statementId}" + SEND_DOCUMENT_MAPPING)
+    @Override
+    public void sendDocuments(@PathVariable String statementId) {
+        statementService.prepareDocuments(statementId);
+    }
+
+    @PostMapping(CALCULATE_MAPPING + "{statementId}" + SIGN_DOCUMENT_MAPPING)
+    @Override
+    public void signDocuments(@PathVariable String statementId) {
+        statementService.signDocuments(statementId);
+    }
+
+    @PostMapping(CALCULATE_MAPPING + "{statementId}" + SES_CODE_MAPPING)
+    @Override
+    public void sendCode(@RequestBody EmailMessageDto emailMessageDto, @PathVariable String statementId) {
+        statementService.verifySesCode(statementId, emailMessageDto);
     }
 }

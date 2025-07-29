@@ -1,5 +1,6 @@
 package io.project.deal.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.project.deal.model.dto.response.PaymentScheduleElementDto;
 import io.project.deal.model.enums.CreditStatus;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @ToString(exclude = "paymentSchedule")
 @Builder
 @Setter

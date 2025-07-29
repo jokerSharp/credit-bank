@@ -1,14 +1,13 @@
 package io.project.deal.data;
 
-import io.project.deal.model.dto.response.StatementStatusHistoryDto;
-import io.project.deal.model.dto.request.EmploymentDto;
-import io.project.deal.model.dto.request.FinishRegistrationRequestDto;
-import io.project.deal.model.dto.request.LoanStatementRequestDto;
-import io.project.deal.model.dto.request.ScoringDataDto;
+import io.project.deal.model.dto.request.*;
 import io.project.deal.model.dto.response.CreditDto;
 import io.project.deal.model.dto.response.LoanOfferDto;
+import io.project.deal.model.dto.response.StatementStatusHistoryDto;
 import io.project.deal.model.entity.*;
 import io.project.deal.model.enums.*;
+import io.project.deal.util.EmailMessageUtils;
+import io.project.deal.util.SesCodeUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +27,13 @@ public class DealTestData {
     public static final String PASSPORT_NUMBER = "567890";
     public static final String PASSPORT_ISSUE_BRANCH = "Fleetwood st. 123";
     public static final LocalDate PASSPORT_ISSUE_DATE = LocalDate.now().minusYears(10);
+    public static final String SES_CODE = "654321";
+    public static final String STUB_URL = "localhost:8081";
+    public static final String SES_MAIL_MESSAGE = """
+            Уважаемый клиент!
+            Код для подтверждения вашей заявки 654321
+            Его необходимо ввести по адресу localhost:8081
+            С уважением, Ваш Банк!""";
 
     public static final LoanStatementRequestDto VALID_LOAN_STATEMENT_REQUEST_DTO = LoanStatementRequestDto.builder()
             .amount(BigDecimal.valueOf(100000))
@@ -301,6 +307,21 @@ public class DealTestData {
             .creditStatus(CreditStatus.CALCULATED)
             .build();
 
+    public static final Credit ISSUED_CREDIT_ENTITY_1 = Credit.builder()
+            .creditId(CREDIT_ID)
+            .amount(BigDecimal.valueOf(100000))
+            .term(10)
+            .monthlyPayment(BigDecimal.valueOf(1208.00))
+            .rate(BigDecimal.valueOf(7.9))
+            .psk(BigDecimal.valueOf(144960.00))
+            .isInsuranceEnabled(true)
+            .isSalaryClient(false)
+            .paymentSchedule(List.of())
+            .creditStatus(CreditStatus.ISSUED)
+            .build();
+
+    public static final String SERIALIZED_SAVED_CREDIT_ENTITY_1 = "{\"creditId\":\"031dcb19-5673-44cc-a7c8-03d6a164cf96\",\"amount\":100000,\"term\":10,\"monthlyPayment\":1208.0,\"rate\":7.9,\"psk\":144960.0,\"paymentSchedule\":[],\"isInsuranceEnabled\":true,\"isSalaryClient\":false,\"creditStatus\":\"CALCULATED\"}";
+
     public static ScoringDataDto getScoringDataDtoWithDifferentEmployment(EmploymentDto employmentDto) {
         return ScoringDataDto.builder()
                 .amount(BigDecimal.valueOf(100000))
@@ -413,7 +434,9 @@ public class DealTestData {
             .creationDate(LocalDateTime.now())
             .status(ApplicationStatus.APPROVED)
             .appliedOffer(OFFERS_WITH_STATEMENT.getFirst())
-            .statusHistory(new ArrayList<>() {{add(STATEMENT_STATUS_HISTORY_DTO);}})
+            .statusHistory(new ArrayList<>() {{
+                add(STATEMENT_STATUS_HISTORY_DTO);
+            }})
             .build();
 
     public static final Statement WITH_CREDIT_STATEMENT_ENTITY = Statement.builder()
@@ -423,7 +446,24 @@ public class DealTestData {
             .creationDate(LocalDateTime.now())
             .status(ApplicationStatus.CC_APPROVED)
             .appliedOffer(OFFERS_WITH_STATEMENT.getFirst())
-            .statusHistory(new ArrayList<>() {{add(STATEMENT_STATUS_HISTORY_DTO);}})
+            .statusHistory(new ArrayList<>() {{
+                add(STATEMENT_STATUS_HISTORY_DTO);
+            }})
+            .credit(SAVED_CREDIT_ENTITY_1)
+            .build();
+
+    public static final Statement WITH_CODE_STATEMENT_ENTITY = Statement.builder()
+            .statementId(STATEMENT_ID)
+            .client(SAVED_CLIENT_ENTITY)
+            .status(ApplicationStatus.PREAPPROVAL)
+            .creationDate(LocalDateTime.now())
+            .status(ApplicationStatus.CC_APPROVED)
+            .appliedOffer(OFFERS_WITH_STATEMENT.getFirst())
+            .statusHistory(new ArrayList<>() {{
+                add(STATEMENT_STATUS_HISTORY_DTO);
+            }})
+            .credit(SAVED_CREDIT_ENTITY_1)
+            .sesCode(SES_CODE)
             .build();
 
     public static final Statement DECLINED_STATEMENT_ENTITY = Statement.builder()
@@ -433,6 +473,40 @@ public class DealTestData {
             .creationDate(LocalDateTime.now())
             .status(ApplicationStatus.CC_DENIED)
             .appliedOffer(OFFERS_WITH_STATEMENT.getFirst())
-            .statusHistory(new ArrayList<>() {{add(STATEMENT_STATUS_HISTORY_DTO);}})
+            .statusHistory(new ArrayList<>() {{
+                add(STATEMENT_STATUS_HISTORY_DTO);
+            }})
+            .build();
+
+    public static final EmailMessageDto CREDIT_EMAIL_MESSAGE = EmailMessageDto.builder()
+            .statementId(STATEMENT_ID)
+            .theme(EmailMessageTheme.SEND_DOCUMENTS)
+            .address(VALID_LOAN_STATEMENT_REQUEST_DTO.getEmail())
+            .text(SERIALIZED_SAVED_CREDIT_ENTITY_1)
+            .build();
+
+    public static final EmailMessageDto SES_CODE_EMAIL_MESSAGE = EmailMessageDto.builder()
+            .statementId(STATEMENT_ID)
+            .theme(EmailMessageTheme.SEND_SES)
+            .address(VALID_LOAN_STATEMENT_REQUEST_DTO.getEmail())
+            .text(SES_MAIL_MESSAGE)
+            .build();
+
+    public static final EmailMessageDto ONLY_SES_CODE_REQUEST_MESSAGE = EmailMessageDto.builder()
+            .text(SES_CODE)
+            .build();
+
+    public static final EmailMessageDto RANDOM_SES_CODE_EMAIL_MESSAGE = EmailMessageDto.builder()
+            .statementId(STATEMENT_ID)
+            .theme(EmailMessageTheme.SEND_SES)
+            .address(VALID_LOAN_STATEMENT_REQUEST_DTO.getEmail())
+            .text(EmailMessageUtils.sesCodeMailMessage(SesCodeUtils.generateSesCode(), STUB_URL))
+            .build();
+
+    public static final EmailMessageDto CREDIT_ISSUED_EMAIL_MESSAGE = EmailMessageDto.builder()
+            .statementId(STATEMENT_ID)
+            .theme(EmailMessageTheme.CREDIT_ISSUED)
+            .address(VALID_LOAN_STATEMENT_REQUEST_DTO.getEmail())
+            .text(EmailMessageUtils.creditIssuedMailMessage())
             .build();
 }
