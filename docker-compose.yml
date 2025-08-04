@@ -53,9 +53,9 @@ services:
       - DATABASE_PASSWORD=postgres
       - CALCULATOR_LOCATION=http://calculator:8080
       - BROKER_LOCATION=broker:9092
-      - FINISH_REGISTRATION=localhost:8081/swagger-ui/index.html#/deal-controller-impl/calculateCredit
-      - CREATE_DOCUMENTS=http://localhost:8081/swagger-ui/index.html#/deal-controller-impl/sendDocuments
-      - SEND_CODE=http://localhost:8081/swagger-ui/index.html#/deal-controller-impl/sendCode
+      - FINISH_REGISTRATION=http://localhost:8084/swagger-ui/index.html#/deal-gateway-controller-impl/finishRegistration
+      - CREATE_DOCUMENTS=http://localhost:8084/swagger-ui/index.html#/deal-gateway-controller-impl/createDocuments
+      - SEND_CODE=http://localhost:8084/swagger-ui/index.html#/deal-gateway-controller-impl/signDocuments
     depends_on:
       - postgres
     networks:
@@ -80,11 +80,23 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - BROKER_LOCATION=broker:9092
-      - SIGN_DOCUMENTS=http://localhost:8081/swagger-ui/index.html#/deal-controller-impl/signDocuments
+      - SIGN_DOCUMENTS=http://localhost:8084/swagger-ui/index.html#/deal-gateway-controller-impl/verifySesCode
       - USERNAME=insert-your-mail
       - PASSWORD=insert-your-password
     depends_on:
       - broker
+    networks:
+      - microservices-network
+
+  api-gateway:
+    build:
+      context: ./apigateway
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - STATEMENT_LOCATION=http://statement:8082
+      - DEAL_LOCATION=http://deal:8081
     networks:
       - microservices-network
 

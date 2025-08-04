@@ -4,6 +4,7 @@ import io.project.deal.model.dto.request.EmailMessageDto;
 import io.project.deal.model.dto.request.FinishRegistrationRequestDto;
 import io.project.deal.model.dto.request.LoanStatementRequestDto;
 import io.project.deal.model.dto.response.LoanOfferDto;
+import io.project.deal.model.entity.Statement;
 
 import java.util.List;
 
@@ -20,4 +21,8 @@ public interface DealController {
     void signDocuments(String statementId);
 
     void sendCode(EmailMessageDto emailMessageDto, String statementId);
+
+    Statement getStatement(String statementId);
+
+    List<Statement> getStatements();
 }

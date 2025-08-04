@@ -19,13 +19,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
+
 import static io.project.deal.controller.impl.DealControllerImpl.*;
 import static io.project.deal.util.validation.MessageForException.entityNotFoundMessage;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = DealControllerImpl.class)
 @Import({StatementServiceImpl.class, DealServiceImpl.class})
@@ -37,6 +38,8 @@ class DealControllerImplTest {
     private static final String SEND_DOCUMENTS_REQUEST = CALCULATE_CREDIT_REQUEST + SEND_DOCUMENT_MAPPING;
     private static final String SIGN_DOCUMENTS_REQUEST = CALCULATE_CREDIT_REQUEST + SIGN_DOCUMENT_MAPPING;
     private static final String SEND_CODE_REQUEST = CALCULATE_CREDIT_REQUEST + SES_CODE_MAPPING;
+    private static final String GET_STATEMENTS_REQUEST = ROOT_DEAL_MAPPING + ADMIN_MAPPING;
+    private static final String GET_SPECIFIC_STATEMENT_REQUEST = ROOT_DEAL_MAPPING + ADMIN_MAPPING + "/" + DealTestData.STATEMENT_ID;
 
     @Autowired
     private MockMvc mockMvc;
@@ -179,5 +182,42 @@ class DealControllerImplTest {
                 .andExpect(status().isOk());
         verify(statementService, times(1))
                 .verifySesCode(DealTestData.STATEMENT_ID.toString(), DealTestData.ONLY_SES_CODE_REQUEST_MESSAGE);
+    }
+
+    @Test
+    void getStatement_returnsStatement() throws Exception {
+        when(statementService.findById(DealTestData.STATEMENT_ID)).thenReturn(DealTestData.SAVED_STATEMENT_ENTITY);
+        String serializedStatement = objectMapper.writeValueAsString(DealTestData.SAVED_STATEMENT_ENTITY);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(GET_SPECIFIC_STATEMENT_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(serializedStatement));
+        verify(statementService, times(1)).findById(DealTestData.STATEMENT_ID);
+    }
+
+    @Test
+    void returnNotFound_whenStatementNotFound() throws Exception {
+        doThrow(new EntityNotFoundException(entityNotFoundMessage(Statement.class, DealTestData.STATEMENT_ID)))
+                .when(statementService).findById(DealTestData.STATEMENT_ID);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(GET_SPECIFIC_STATEMENT_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        verify(statementService, times(1)).findById(DealTestData.STATEMENT_ID);
+    }
+
+    @Test
+    void getStatements_returnsStatements() throws Exception {
+        List<Statement> statements = List.of(DealTestData.SAVED_STATEMENT_ENTITY,
+                DealTestData.ANOTHER_SAVED_STATEMENT_ENTITY);
+        String serializedStatements = objectMapper.writeValueAsString(statements);
+        when(statementService.finalAll()).thenReturn(statements);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(GET_STATEMENTS_REQUEST)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(serializedStatements));
+        verify(statementService, times(1)).finalAll();
     }
 }
