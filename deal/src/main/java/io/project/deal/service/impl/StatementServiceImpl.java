@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import static io.project.deal.util.validation.MessageForException.entityIdIsNullMessage;
 import static io.project.deal.util.validation.MessageForException.entityNotFoundMessage;
@@ -67,6 +68,12 @@ public class StatementServiceImpl implements StatementService {
                     log.error(entityNotFoundMessage(Statement.class, id));
                     return new EntityNotFoundException(entityNotFoundMessage(Statement.class, id));
                 });
+    }
+
+    @Override
+    public List<Statement> finalAll() {
+        return StreamSupport.stream(statementRepository.findAll().spliterator(), false)
+                .toList();
     }
 
     @Transactional

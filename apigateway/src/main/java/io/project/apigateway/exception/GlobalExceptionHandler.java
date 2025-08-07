@@ -1,4 +1,4 @@
-package io.project.statement.exception;
+package io.project.apigateway.exception;
 
 import feign.RetryableException;
 import lombok.extern.slf4j.Slf4j;

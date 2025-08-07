@@ -21,6 +21,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static io.project.deal.util.validation.MessageForException.entityIdIsNullMessage;
@@ -67,6 +68,20 @@ class StatementServiceImplTest {
         assertEquals(DealTestData.SAVED_STATEMENT_ENTITY, result);
         assertEquals(DealTestData.STATEMENT_ID, result.getStatementId());
         verify(statementRepository).findById(DealTestData.STATEMENT_ID);
+    }
+
+    @Test
+    void shouldReturnStatements_whenThereAreSavedStatements() {
+        when(statementRepository.findAll())
+                .thenReturn(List.of(DealTestData.SAVED_STATEMENT_ENTITY,
+                        DealTestData.ANOTHER_SAVED_STATEMENT_ENTITY));
+
+        List<Statement> result = statementService.finalAll();
+
+        assertNotNull(result);
+        assertEquals(DealTestData.STATEMENT_ID, result.getFirst().getStatementId());
+        assertEquals(DealTestData.ANOTHER_STATEMENT_ID, result.getLast().getStatementId());
+        verify(statementRepository).findAll();
     }
 
     @Test

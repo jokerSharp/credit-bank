@@ -19,6 +19,7 @@ import java.util.UUID;
 public class DealTestData {
 
     public static final UUID STATEMENT_ID = UUID.randomUUID();
+    public static final UUID ANOTHER_STATEMENT_ID = UUID.randomUUID();
     public static final UUID CLIENT_ID = UUID.randomUUID();
     public static final UUID PASSPORT_ID = UUID.randomUUID();
     public static final UUID CREDIT_ID = UUID.randomUUID();
@@ -417,6 +418,13 @@ public class DealTestData {
 
     public static final Statement SAVED_STATEMENT_ENTITY = Statement.builder()
             .statementId(STATEMENT_ID)
+            .client(SAVED_CLIENT_ENTITY)
+            .status(ApplicationStatus.PREAPPROVAL)
+            .creationDate(LocalDateTime.now())
+            .build();
+
+    public static final Statement ANOTHER_SAVED_STATEMENT_ENTITY = Statement.builder()
+            .statementId(ANOTHER_STATEMENT_ID)
             .client(SAVED_CLIENT_ENTITY)
             .status(ApplicationStatus.PREAPPROVAL)
             .creationDate(LocalDateTime.now())

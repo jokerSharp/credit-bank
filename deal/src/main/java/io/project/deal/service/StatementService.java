@@ -6,6 +6,7 @@ import io.project.deal.model.entity.Client;
 import io.project.deal.model.entity.Credit;
 import io.project.deal.model.entity.Statement;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface StatementService {
@@ -27,4 +28,6 @@ public interface StatementService {
     void signDocuments(String statementId);
 
     void verifySesCode(String statementId, EmailMessageDto emailMessageDto);
+
+    List<Statement> finalAll();
 }

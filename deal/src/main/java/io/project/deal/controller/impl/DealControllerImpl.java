@@ -5,6 +5,7 @@ import io.project.deal.model.dto.request.EmailMessageDto;
 import io.project.deal.model.dto.request.FinishRegistrationRequestDto;
 import io.project.deal.model.dto.request.LoanStatementRequestDto;
 import io.project.deal.model.dto.response.LoanOfferDto;
+import io.project.deal.model.entity.Statement;
 import io.project.deal.service.DealService;
 import io.project.deal.service.StatementService;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RequestMapping(DealControllerImpl.ROOT_DEAL_MAPPING)
@@ -25,6 +27,7 @@ public class DealControllerImpl implements DealController {
     public static final String SEND_DOCUMENT_MAPPING = "/send";
     public static final String SIGN_DOCUMENT_MAPPING = "/sign";
     public static final String SES_CODE_MAPPING = "/code";
+    public static final String ADMIN_MAPPING = "/admin/statement";
 
     private final StatementService statementService;
 
@@ -65,5 +68,17 @@ public class DealControllerImpl implements DealController {
     @Override
     public void sendCode(@RequestBody EmailMessageDto emailMessageDto, @PathVariable String statementId) {
         statementService.verifySesCode(statementId, emailMessageDto);
+    }
+
+    @GetMapping(ADMIN_MAPPING + "/{statementId}")
+    @Override
+    public Statement getStatement(@PathVariable String statementId) {
+        return statementService.findById(UUID.fromString(statementId));
+    }
+
+    @GetMapping(ADMIN_MAPPING)
+    @Override
+    public List<Statement> getStatements() {
+        return statementService.finalAll();
     }
 }
