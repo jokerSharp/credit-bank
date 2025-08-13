@@ -14,17 +14,13 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'openjdk'
+          distribution: 'temurin'
           server-id: github
           settings-path: ${{ github.workspace }}
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
