@@ -32,5 +32,5 @@ jobs:
           args: >
             -Dsonar.organization=jokersharp
             -Dsonar.projectKey=jokerSharp_credit-bank
-            -Dsonar.login=${{env.SONAR_TOKEN}}
+            -Dsonar.token=${{env.SONAR_TOKEN}}
             -Dsonar.java.binaries=**/target/classes
