@@ -28,9 +28,11 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
         with:
           args: >
             -Dsonar.organization=jokersharp
             -Dsonar.projectKey=jokerSharp_credit-bank
-            -Dsonar.token=${{env.SONAR_TOKEN}}
+            -Dsonar.login=${{env.SONAR_TOKEN}}
             -Dsonar.java.binaries=**/target/classes
