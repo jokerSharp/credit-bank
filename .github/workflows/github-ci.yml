@@ -25,3 +25,13 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+        with:
+          args: >
+            -Dsonar.organization=jokersharp
+            -Dsonar.projectKey=jokerSharp_credit-bank
+            -Dsonar.login=${{env.SONAR_TOKEN}}
