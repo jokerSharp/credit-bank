@@ -1,6 +1,5 @@
 package io.project.dossier.service;
 
-
 import io.project.dossier.model.dto.request.EmailMessageDto;
 
 public interface MessageConsumer {
@@ -12,15 +11,15 @@ public interface MessageConsumer {
     String CREDIT_ISSUED_TOPIC = "credit-issued";
     String STATEMENT_DENIED_TOPIC = "statement-denied";
 
-    void finishRegistration(EmailMessageDto message, String topic, int partition, long offset);
+    void finishRegistration(EmailMessageDto message);
 
-    void createDocument(EmailMessageDto message, String topic, int partition, long offset);
+    void createDocument(EmailMessageDto message);
 
-    void declineStatement(EmailMessageDto message, String topic, int partition, long offset);
+    void declineStatement(EmailMessageDto message);
 
-    void prepareDocuments(EmailMessageDto message, String topic, int partition, long offset);
+    void prepareDocuments(EmailMessageDto message);
 
-    void signDocuments(EmailMessageDto message, String topic, int partition, long offset);
+    void signDocuments(EmailMessageDto message);
 
-    void issueCredit(EmailMessageDto message, String topic, int partition, long offset);
+    void issueCredit(EmailMessageDto message);
 }
