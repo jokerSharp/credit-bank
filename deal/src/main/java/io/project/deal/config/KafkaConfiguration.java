@@ -1,59 +1,39 @@
 package io.project.deal.config;
 
-import io.project.deal.service.EmailMessageProducer;
-import org.apache.kafka.clients.admin.NewTopic;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.project.deal.model.dto.request.EmailMessageDto;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class KafkaConfiguration {
 
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
     @Bean
-    public NewTopic finishRegistrationTopic() {
-        return TopicBuilder.name(EmailMessageProducer.FINISH_REGISTRATION_TOPIC)
-                .partitions(3)
-                .replicas(1)
-                .build();
+    public ProducerFactory<String, EmailMessageDto> kafkaResourceFactory(ObjectMapper objectMapper) {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+
+        JsonSerializer<EmailMessageDto> serializer = new JsonSerializer<>(objectMapper);
+        serializer.setAddTypeInfo(false);
+
+        return new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), serializer);
     }
 
     @Bean
-    public NewTopic createDocumentsTopic() {
-        return TopicBuilder.name(EmailMessageProducer.CREATE_DOCUMENTS_TOPIC)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic sendDocumentsTopic() {
-        return TopicBuilder.name(EmailMessageProducer.SEND_DOCUMENTS_TOPIC)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic sendSesTopic() {
-        return TopicBuilder.name(EmailMessageProducer.SEND_SES_TOPIC)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic creditIssuedTopic() {
-        return TopicBuilder.name(EmailMessageProducer.CREDIT_ISSUED_TOPIC)
-                .partitions(3)
-                .replicas(1)
-                .build();
-    }
-
-    @Bean
-    public NewTopic statementDeniedTopic() {
-        return TopicBuilder.name(EmailMessageProducer.STATEMENT_DENIED_TOPIC)
-                .partitions(3)
-                .replicas(1)
-                .build();
+    public KafkaTemplate<String, EmailMessageDto> kafkaTemplate(ProducerFactory<String, EmailMessageDto> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
     }
 }

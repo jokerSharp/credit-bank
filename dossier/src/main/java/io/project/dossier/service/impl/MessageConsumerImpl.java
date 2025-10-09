@@ -20,60 +20,42 @@ public class MessageConsumerImpl implements MessageConsumer {
 
     @KafkaListener(topics = FINISH_REGISTRATION_TOPIC)
     @Override
-    public void finishRegistration(@Payload EmailMessageDto message,
-                                   @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                                   @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-                                   @Header(KafkaHeaders.OFFSET) long offset) {
+    public void finishRegistration(EmailMessageDto message) {
         log.info("received finish registration message={}", message);
         mailSenderService.sendEmail(message);
     }
 
     @KafkaListener(topics = CREATE_DOCUMENTS_TOPIC)
     @Override
-    public void createDocument(@Payload EmailMessageDto message,
-                               @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                               @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-                               @Header(KafkaHeaders.OFFSET) long offset) {
+    public void createDocument(EmailMessageDto message) {
         log.info("received create documents message={}", message);
         mailSenderService.sendEmail(message);
     }
 
     @KafkaListener(topics = STATEMENT_DENIED_TOPIC)
     @Override
-    public void declineStatement(@Payload EmailMessageDto message,
-                                 @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                                 @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-                                 @Header(KafkaHeaders.OFFSET) long offset) {
+    public void declineStatement(EmailMessageDto message) {
         log.info("received statement denied message={}", message);
         mailSenderService.sendEmail(message);
     }
 
     @KafkaListener(topics = MessageConsumer.SEND_DOCUMENTS_TOPIC)
     @Override
-    public void prepareDocuments(@Payload EmailMessageDto message,
-                                 @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                                 @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-                                 @Header(KafkaHeaders.OFFSET) long offset) {
+    public void prepareDocuments(EmailMessageDto message) {
         log.info("received prepare documents message");
         mailSenderService.sendEmailWithAttachment(message);
     }
 
     @KafkaListener(topics = MessageConsumer.SEND_SES_TOPIC)
     @Override
-    public void signDocuments(@Payload EmailMessageDto message,
-                              @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                              @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-                              @Header(KafkaHeaders.OFFSET) long offset) {
+    public void signDocuments(EmailMessageDto message) {
         log.info("received signed documents message");
         mailSenderService.sendEmail(message);
     }
 
     @KafkaListener(topics = MessageConsumer.CREDIT_ISSUED_TOPIC)
     @Override
-    public void issueCredit(@Payload EmailMessageDto message,
-                            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                            @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-                            @Header(KafkaHeaders.OFFSET) long offset) {
+    public void issueCredit(EmailMessageDto message) {
         log.info("received send ses code message={}", message);
         mailSenderService.sendEmail(message);
     }
